@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Consulting Radar</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0f14;--surface:#1a1a24;--surface2:#22222f;
+  --border:#2a2a3a;--text:#e4e4ef;--muted:#8888a0;
+  --accent:#6c63ff;--accent2:#ff6b6b;
+  --green:#4ade80;--gold:#fbbf24;--orange:#f97316;
+  --radius:10px;--font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.7;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.container{max-width:800px;margin:0 auto;padding:16px}
+
+/* Header */
+.header{padding:40px 0 24px;text-align:center;border-bottom:1px solid var(--border);margin-bottom:24px}
+.header h1{font-size:24px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header p{color:var(--muted);font-size:13px;margin-top:4px}
+
+/* Date nav */
+.date-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px}
+.date-nav button{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:all .15s}
+.date-nav button:hover{background:var(--surface2);border-color:var(--accent)}
+.date-nav span{font-size:15px;font-weight:600;min-width:120px;text-align:center}
+
+/* Profile filter */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;justify-content:center}
+.filters button{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .15s}
+.filters button:hover{border-color:var(--accent);color:var(--text)}
+.filters button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* Stats bar */
+.stats{display:flex;gap:16px;justify-content:center;margin-bottom:20px;font-size:12px;color:var(--muted)}
+.stats span{display:flex;align-items:center;gap:4px}
+.stats .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;transition:border-color .15s}
+.card:hover{border-color:var(--accent)}
+.card-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.card-score{flex-shrink:0;width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff}
+.score-high{background:linear-gradient(135deg,#be185d,#e0652e)}
+.score-good{background:linear-gradient(135deg,#e0652e,#d4a017)}
+.score-mid{background:linear-gradient(135deg,#d4a017,#7c7891)}
+.score-low{background:var(--border);color:var(--muted)}
+.card-title{font-size:15px;font-weight:700;line-height:1.4;flex:1}
+.card-title a{color:var(--text)}
+.card-title a:hover{color:var(--accent)}
+.card-meta{font-size:11px;color:var(--muted);margin-bottom:8px;display:flex;gap:8px;flex-wrap:wrap}
+.card-profile{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.profile-ai-industry{background:#312e8133;color:#9b8ff7}
+.profile-ai-vertical-apps{background:#be185d22;color:#f472b6}
+.profile-ai-coding-tools{background:#16a34a22;color:var(--green)}
+.profile-overseas-plg{background:#f9731622;color:var(--orange)}
+.card-body{font-size:13px;color:var(--text);line-height:1.7}
+.card-body p{margin-bottom:8px}
+.card-section{margin-top:10px;padding:10px 12px;background:var(--surface2);border-radius:6px;font-size:12px}
+.card-section-title{font-weight:700;color:var(--gold);margin-bottom:3px;font-size:12px}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.card-tags span{background:var(--surface2);color:var(--muted);padding:2px 8px;border-radius:4px;font-size:11px}
+
+/* Loading / empty */
+.loading,.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.loading::after{content:'';display:block;width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin:16px auto 0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Footer */
+.footer{text-align:center;padding:24px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:24px}
+
+/* Responsive */
+@media(max-width:600px){
+  .container{padding:12px}
+  .card{padding:12px 14px}
+  .card-title{font-size:14px}
+  .header h1{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>AI Consulting Radar</h1>
+    <p>AI 咨询雷达 · 每日精选行业动态</p>
+  </div>
+
+  <div class="date-nav">
+    <button onclick="changeDate(-1)">&larr; 前一天</button>
+    <span id="current-date"></span>
+    <button onclick="changeDate(1)">后一天 &rarr;</button>
+  </div>
+
+  <div class="filters" id="filters"></div>
+  <div class="stats" id="stats"></div>
+  <div id="content"><div class="loading">加载中</div></div>
+
+  <div class="footer">
+    Powered by <a href="https://github.com/Thysrael/Horizon">Horizon</a> ·
+    AI 驱动信息聚合 · Qwen 评分与富化
+  </div>
+</div>
+
+<script>
+const PROFILE_NAMES = {
+  'ai-industry': 'AI行业动态',
+  'ai-vertical-apps': '垂直AI应用',
+  'ai-coding-tools': 'AI编程工具',
+  'overseas-plg': '海外PLG小工具'
+};
+
+let currentDate = new Date();
+let allItems = [];
+let activeFilter = 'all';
+
+function pad(n) { return String(n).padStart(2, '0'); }
+function fmtDate(d) { return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+
+function changeDate(delta) {
+  currentDate.setDate(currentDate.getDate() + delta);
+  loadDay();
+}
+
+async function loadDay() {
+  const ds = fmtDate(currentDate);
+  document.getElementById('current-date').textContent = ds;
+  document.getElementById('content').innerHTML = '<div class="loading">加载中</div>';
+  document.getElementById('filters').innerHTML = '';
+  document.getElementById('stats').innerHTML = '';
+
+  const url = `_posts/${ds}-summary-zh.md`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('not found');
+    let md = await res.text();
+    md = md.replace(/^---[\s\S]*?---\n*/, '');
+    allItems = parseMd(md);
+    activeFilter = 'all';
+    renderFilters();
+    renderItems();
+  } catch {
+    document.getElementById('content').innerHTML = '<div class="empty">该日期暂无数据</div>';
+  }
+}
+
+function parseMd(md) {
+  const items = [];
+  const blocks = md.split(/^---$/m).filter(b => b.trim());
+  let currentProfile = '';
+  let currentProfileId = '';
+
+  for (const block of blocks) {
+    const profileMatch = block.match(/^## (.+)$/m);
+    if (profileMatch) {
+      currentProfile = profileMatch[1].trim();
+      for (const [id, name] of Object.entries(PROFILE_NAMES)) {
+        if (currentProfile.includes(name) || currentProfile === name) {
+          currentProfileId = id;
+          break;
+        }
+      }
+    }
+
+    const itemMatch = block.match(/^### \[(.+?)\]\((.+?)\)\s*⭐️\s*([\d.]+)\/10/m);
+    if (!itemMatch) continue;
+
+    const title = itemMatch[1].replace(/&\\#x27;/g, "'").replace(/\\(.)/g, '$1');
+    const url = itemMatch[2];
+    const score = parseFloat(itemMatch[3]);
+
+    const metaMatch = block.match(/^((?:rss|reddit|hackernews|github).+)$/m);
+    const meta = metaMatch ? metaMatch[1].trim() : '';
+
+    const sections = [];
+    const sectionRe = /\*\*「(.+?)」\*\*\s*([\s\S]*?)(?=\n\n\*\*「|\n\n\*\*标签|\n---|\n$)/g;
+    let m;
+    while ((m = sectionRe.exec(block)) !== null) {
+      sections.push({ title: m[1], content: m[2].trim() });
+    }
+
+    const tagsMatch = block.match(/\*\*标签\*\*:\s*(.+)/);
+    const tags = tagsMatch
+      ? tagsMatch[1].match(/`#([^`]+)`/g)?.map(t => t.replace(/`#?/g, '')) || []
+      : [];
+
+    const summaryLines = [];
+    const lines = block.split('\n');
+    let inSummary = false;
+    for (const line of lines) {
+      if (line.match(/^### /)) { inSummary = true; continue; }
+      if (inSummary && line.trim() && !line.startsWith('**') && !line.match(/^(rss|reddit|hackernews|github)/)) {
+        summaryLines.push(line.trim());
+      }
+      if (line.startsWith('**「') || line.startsWith('**标签')) inSummary = false;
+    }
+
+    items.push({
+      title, url, score, meta, sections, tags,
+      summary: summaryLines.join(' '),
+      profile: currentProfileId,
+      profileName: currentProfile
+    });
+  }
+  return items;
+}
+
+function renderFilters() {
+  const profiles = [...new Set(allItems.map(i => i.profile))];
+  const el = document.getElementById('filters');
+  let html = `<button class="${activeFilter==='all'?'active':''}" onclick="setFilter('all')">全部 (${allItems.length})</button>`;
+  for (const p of profiles) {
+    const count = allItems.filter(i => i.profile === p).length;
+    const name = PROFILE_NAMES[p] || p;
+    html += `<button class="${activeFilter===p?'active':''}" onclick="setFilter('${p}')">${name} (${count})</button>`;
+  }
+  el.innerHTML = html;
+
+  const statsEl = document.getElementById('stats');
+  const avgScore = allItems.length ? (allItems.reduce((s,i) => s+i.score, 0) / allItems.length).toFixed(1) : '0';
+  statsEl.innerHTML = `
+    <span><span class="dot" style="background:var(--accent)"></span> ${allItems.length} 条精选</span>
+    <span><span class="dot" style="background:var(--gold)"></span> 均分 ${avgScore}</span>
+    <span><span class="dot" style="background:var(--green)"></span> ${profiles.length} 个方向</span>
+  `;
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  renderFilters();
+  renderItems();
+}
+
+function scoreClass(s) {
+  if (s >= 9) return 'score-high';
+  if (s >= 7) return 'score-good';
+  if (s >= 5) return 'score-mid';
+  return 'score-low';
+}
+
+function renderItems() {
+  const filtered = activeFilter === 'all' ? allItems : allItems.filter(i => i.profile === activeFilter);
+  if (!filtered.length) {
+    document.getElementById('content').innerHTML = '<div class="empty">该分类暂无内容</div>';
+    return;
+  }
+
+  let html = '';
+  for (const item of filtered) {
+    const profileClass = `profile-${item.profile}`;
+    html += `<div class="card">
+      <div class="card-header">
+        <div class="card-score ${scoreClass(item.score)}">${item.score}</div>
+        <div class="card-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>
+      </div>
+      <div class="card-meta">
+        <span class="card-profile ${profileClass}">${item.profileName}</span>
+        <span>${item.meta}</span>
+      </div>
+      <div class="card-body">
+        ${item.summary ? `<p>${item.summary}</p>` : ''}
+        ${item.sections.map(s => `<div class="card-section"><div class="card-section-title">${s.title}</div>${s.content}</div>`).join('')}
+        ${item.tags.length ? `<div class="card-tags">${item.tags.map(t => `<span>#${t}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>`;
+  }
+  document.getElementById('content').innerHTML = html;
+}
+
+loadDay();
+</script>
+</body>
+</html>
