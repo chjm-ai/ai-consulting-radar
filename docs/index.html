@@ -134,7 +134,8 @@ async function loadDay() {
   document.getElementById('filters').innerHTML = '';
   document.getElementById('stats').innerHTML = '';
 
-  const url = `_posts/${ds}-summary-zh.md`;
+  const base = location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
+  const url = `${base}/_posts/${ds}-summary-zh.md`;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error('not found');
