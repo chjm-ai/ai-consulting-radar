@@ -1,0 +1,16 @@
+{
+  "id": "overseas-plg",
+  "name": "Overseas PLG AI Tools",
+  "display_names": {"zh": "海外PLG小工具"},
+  "match": "match.md",
+  "analysis": "analysis.md",
+  "enrichment": {
+    "prompt": "enrichment.md",
+    "blocks": [
+      {"id": "summary", "type": "section", "tools": [], "primary": true},
+      {"id": "plg_analysis", "type": "section", "tools": ["web_search"], "optional": true},
+      {"id": "opportunity", "type": "section", "tools": [], "optional": true},
+      {"id": "community_discussion", "type": "section", "tools": [], "optional": true}
+    ]
+  }
+}

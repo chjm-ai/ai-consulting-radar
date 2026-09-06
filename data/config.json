@@ -1,0 +1,282 @@
+{
+  "ai": {
+    "provider": "ali",
+    "model": "qwen-plus",
+    "api_key_env": "DASHSCOPE_API_KEY",
+    "temperature": 0.3,
+    "max_tokens": 4096,
+    "throttle_sec": 0,
+    "analysis_concurrency": 3,
+    "enrichment_concurrency": 2,
+    "languages": ["zh"]
+  },
+  "processing": {
+    "profiles_dir": "profiles",
+    "default_profile": "ai-industry",
+    "profile_settings": {
+      "ai-industry": {
+        "threshold": 7.0,
+        "topic_dedup": true
+      },
+      "ai-vertical-apps": {
+        "threshold": 7.0,
+        "topic_dedup": true
+      },
+      "ai-coding-tools": {
+        "threshold": 7.0,
+        "topic_dedup": true
+      },
+      "overseas-plg": {
+        "threshold": 7.0,
+        "topic_dedup": true
+      }
+    }
+  },
+  "display": {
+    "icon_style": "emoji"
+  },
+  "email": {
+    "enabled": false,
+    "smtp_server": "",
+    "imap_server": "",
+    "email_address": ""
+  },
+  "sources": {
+    "hackernews": {
+      "enabled": true,
+      "fetch_top_stories": 30,
+      "min_score": 80,
+      "profile": "auto"
+    },
+    "rss": [
+      {
+        "name": "OpenAI Blog",
+        "url": "https://openai.com/blog/rss.xml",
+        "enabled": true,
+        "category": "ai-labs",
+        "profile": "auto"
+      },
+      {
+        "name": "Anthropic News",
+        "url": "https://www.anthropic.com/feed.xml",
+        "enabled": true,
+        "category": "ai-labs",
+        "profile": "auto"
+      },
+      {
+        "name": "Google AI Blog",
+        "url": "https://blog.google/technology/ai/rss/",
+        "enabled": true,
+        "category": "ai-labs",
+        "profile": "auto"
+      },
+      {
+        "name": "DeepMind Blog",
+        "url": "https://deepmind.google/blog/rss.xml",
+        "enabled": true,
+        "category": "ai-labs",
+        "profile": "auto"
+      },
+      {
+        "name": "HuggingFace Blog",
+        "url": "https://huggingface.co/blog/feed.xml",
+        "enabled": true,
+        "category": "ai-tools",
+        "profile": "auto"
+      },
+      {
+        "name": "Simon Willison",
+        "url": "https://simonwillison.net/atom/everything/",
+        "enabled": true,
+        "category": "ai-tools",
+        "profile": "ai-coding-tools"
+      },
+      {
+        "name": "The Verge - AI",
+        "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+        "enabled": true,
+        "category": "ai-news",
+        "profile": "auto"
+      },
+      {
+        "name": "TechCrunch - AI",
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "enabled": true,
+        "category": "ai-news",
+        "profile": "auto"
+      },
+      {
+        "name": "Latent Space",
+        "url": "https://www.latent.space/feed",
+        "enabled": true,
+        "category": "ai-deep",
+        "profile": "auto",
+        "content_extractor": "trafilatura"
+      },
+      {
+        "name": "机器之心",
+        "url": "https://www.jiqizhixin.com/rss",
+        "enabled": true,
+        "category": "ai-cn",
+        "profile": "auto"
+      },
+      {
+        "name": "36kr - AI",
+        "url": "https://36kr.com/feed",
+        "enabled": true,
+        "category": "ai-cn",
+        "profile": "auto"
+      },
+      {
+        "name": "Product Hunt - AI",
+        "url": "https://www.producthunt.com/feed?category=artificial-intelligence",
+        "enabled": true,
+        "category": "plg",
+        "profile": "overseas-plg"
+      },
+      {
+        "name": "Indie Hackers",
+        "url": "https://www.indiehackers.com/feed.xml",
+        "enabled": true,
+        "category": "plg",
+        "profile": "overseas-plg"
+      },
+      {
+        "name": "Hacker News - Show HN",
+        "url": "https://hnrss.org/show?q=AI+OR+LLM+OR+GPT",
+        "enabled": true,
+        "category": "plg",
+        "profile": "auto"
+      },
+      {
+        "name": "GitHub Blog",
+        "url": "https://github.blog/feed/",
+        "enabled": true,
+        "category": "ai-coding",
+        "profile": "ai-coding-tools"
+      },
+      {
+        "name": "a16z AI",
+        "url": "https://a16z.com/feed/",
+        "enabled": true,
+        "category": "ai-deep",
+        "profile": "auto",
+        "content_extractor": "trafilatura"
+      },
+      {
+        "name": "AI Tidbits Newsletter",
+        "url": "https://aititbits.substack.com/feed",
+        "enabled": true,
+        "category": "ai-news",
+        "profile": "auto"
+      }
+    ],
+    "reddit": {
+      "enabled": true,
+      "subreddits": [
+        {
+          "subreddit": "MachineLearning",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 15,
+          "min_score": 50,
+          "profile": "auto"
+        },
+        {
+          "subreddit": "LocalLLaMA",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 10,
+          "min_score": 30,
+          "profile": "auto"
+        },
+        {
+          "subreddit": "ChatGPTCoding",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 10,
+          "min_score": 20,
+          "profile": "ai-coding-tools"
+        },
+        {
+          "subreddit": "SaaS",
+          "enabled": true,
+          "sort": "hot",
+          "time_filter": "day",
+          "fetch_limit": 10,
+          "min_score": 20,
+          "profile": "overseas-plg"
+        }
+      ],
+      "fetch_comments": 5
+    },
+    "github": [
+      {
+        "type": "repo_releases",
+        "owner": "anthropics",
+        "repo": "claude-code",
+        "enabled": true,
+        "profile": "ai-coding-tools"
+      },
+      {
+        "type": "repo_releases",
+        "owner": "langchain-ai",
+        "repo": "langchain",
+        "enabled": true,
+        "profile": "ai-coding-tools"
+      },
+      {
+        "type": "repo_releases",
+        "owner": "crewAIInc",
+        "repo": "crewAI",
+        "enabled": true,
+        "profile": "ai-coding-tools"
+      }
+    ],
+    "twitter": {
+      "enabled": false
+    },
+    "telegram": {
+      "enabled": false
+    },
+    "openbb": {
+      "enabled": false
+    },
+    "ossinsight": {
+      "enabled": false
+    },
+    "gdelt": {
+      "enabled": false
+    },
+    "google_news": {
+      "enabled": false
+    }
+  },
+  "collection": {
+    "time_window_hours": 24
+  },
+  "digest": {
+    "max_items": 25,
+    "profile_order": [
+      "ai-industry",
+      "ai-vertical-apps",
+      "ai-coding-tools",
+      "overseas-plg"
+    ],
+    "category_groups": {
+      "ai-labs": {"limit": 6, "categories": ["ai-labs"]},
+      "ai-news": {"limit": 8, "categories": ["ai-news", "ai-cn"]},
+      "ai-tools": {"limit": 6, "categories": ["ai-tools", "ai-coding"]},
+      "ai-deep": {"limit": 4, "categories": ["ai-deep"]},
+      "plg": {"limit": 6, "categories": ["plg"]}
+    },
+    "default_group": "other",
+    "default_group_limit": 5
+  },
+  "webhook": {
+    "enabled": false
+  }
+}
