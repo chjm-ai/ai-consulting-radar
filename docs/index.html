@@ -24,21 +24,35 @@ a:hover{text-decoration:underline}
 .header h1{font-size:24px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .header p{color:var(--muted);font-size:13px;margin-top:4px}
 
+/* Layout: sidebar + main */
+.layout{display:flex;align-items:flex-start;gap:28px;max-width:1120px;margin:0 auto;padding:0 16px}
+.sidebar{width:230px;flex-shrink:0;position:sticky;top:16px}
+.sidebar-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;padding:0 4px}
+.source-list{display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 40px);overflow-y:auto}
+.source-list button{display:flex;justify-content:space-between;align-items:center;gap:8px;background:transparent;border:1px solid transparent;color:var(--muted);padding:7px 10px;border-radius:6px;cursor:pointer;font-size:13px;text-align:left;width:100%;transition:all .15s}
+.source-list button:hover{background:var(--surface);color:var(--text)}
+.source-list button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.source-list button .count{font-size:11px;opacity:.75;flex-shrink:0}
+.main{flex:1;min-width:0;max-width:800px}
+
 /* Profile filter */
-.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;justify-content:center}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
 .filters button{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .15s}
 .filters button:hover{border-color:var(--accent);color:var(--text)}
 .filters button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-/* Source filter */
-.source-filter{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px}
-.source-filter label{font-size:12px;color:var(--muted)}
-.source-filter select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:12px;max-width:220px}
-
 /* Stats bar */
-.stats{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;font-size:12px;color:var(--muted)}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;font-size:12px;color:var(--muted)}
 .stats span{display:flex;align-items:center;gap:4px}
 .stats .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+
+@media(max-width:760px){
+  .layout{flex-direction:column;padding:0 12px}
+  .sidebar{width:100%;position:static}
+  .source-list{flex-direction:row;overflow-x:auto;overflow-y:visible;max-height:none;padding-bottom:4px}
+  .source-list button{flex-shrink:0;white-space:nowrap}
+  .main{max-width:100%}
+}
 
 /* Date group */
 .date-group{margin-bottom:28px}
@@ -94,17 +108,21 @@ a:hover{text-decoration:underline}
     <h1>AI Consulting Radar</h1>
     <p>AI 咨询雷达 · 每日精选行业动态</p>
   </div>
+</div>
 
-  <div class="filters" id="filters"></div>
-  <div class="source-filter">
-    <label for="source-select">来源</label>
-    <select id="source-select" onchange="setSource(this.value)">
-      <option value="all">全部来源</option>
-    </select>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-title">来源筛选</div>
+    <div class="source-list" id="source-list"></div>
+  </aside>
+  <div class="main">
+    <div class="filters" id="filters"></div>
+    <div class="stats" id="stats"></div>
+    <div id="content"><div class="loading">加载中</div></div>
   </div>
-  <div class="stats" id="stats"></div>
-  <div id="content"><div class="loading">加载中</div></div>
+</div>
 
+<div class="container">
   <div class="footer">
     Powered by <a href="https://github.com/Thysrael/Horizon">Horizon</a> ·
     AI 驱动信息聚合 · Qwen 评分与富化
@@ -170,7 +188,7 @@ async function loadAll() {
   activeFilter = 'all';
   activeSource = 'all';
   renderFilters();
-  renderSourceOptions();
+  renderSourceList();
   renderStats();
   renderItems();
 }
@@ -258,22 +276,36 @@ function renderFilters() {
   el.innerHTML = html;
 }
 
-function renderSourceOptions() {
-  const sources = [...new Set(allItems.map(i => i.source))].sort((a, b) => a.localeCompare(b, 'zh'));
-  const sel = document.getElementById('source-select');
-  let html = `<option value="all">全部来源 (${allItems.length})</option>`;
-  for (const s of sources) {
-    const count = allItems.filter(i => i.source === s).length;
-    const label = s.replace(/"/g, '&quot;');
-    html += `<option value="${label}">${s} (${count})</option>`;
-  }
-  sel.innerHTML = html;
-  sel.value = activeSource;
+function renderSourceList() {
+  const profileScoped = activeFilter === 'all' ? allItems : allItems.filter(i => i.profile === activeFilter);
+  const counts = new Map();
+  for (const i of profileScoped) counts.set(i.source, (counts.get(i.source) || 0) + 1);
+  const sources = [...counts.keys()].sort((a, b) => (counts.get(b) - counts.get(a)) || a.localeCompare(b, 'zh'));
+
+  const el = document.getElementById('source-list');
+  el.innerHTML = '';
+
+  const makeBtn = (label, value, count) => {
+    const btn = document.createElement('button');
+    if (activeSource === value) btn.classList.add('active');
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = label;
+    const countSpan = document.createElement('span');
+    countSpan.className = 'count';
+    countSpan.textContent = count;
+    btn.append(nameSpan, countSpan);
+    btn.addEventListener('click', () => setSource(value));
+    return btn;
+  };
+
+  el.appendChild(makeBtn('全部来源', 'all', profileScoped.length));
+  for (const s of sources) el.appendChild(makeBtn(s, s, counts.get(s)));
 }
 
 function setFilter(f) {
   activeFilter = f;
   renderFilters();
+  renderSourceList();
   renderStats();
   renderItems();
 }
@@ -281,6 +313,7 @@ function setFilter(f) {
 function setSource(s) {
   activeSource = s;
   renderFilters();
+  renderSourceList();
   renderStats();
   renderItems();
 }

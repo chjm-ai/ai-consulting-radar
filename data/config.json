@@ -8,7 +8,9 @@
     "throttle_sec": 0,
     "analysis_concurrency": 3,
     "enrichment_concurrency": 2,
-    "languages": ["zh"]
+    "languages": [
+      "zh"
+    ]
   },
   "processing": {
     "profiles_dir": "profiles",
@@ -260,6 +262,62 @@
         "enabled": true,
         "category": "ai-coding",
         "profile": "ai-coding-tools"
+      },
+      {
+        "name": "No Priors (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCSI7h9hydQ40K5MJHnCrQvw",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "ai-industry"
+      },
+      {
+        "name": "Dwarkesh Patel (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCXl4i9dYBrFOabk0xGmbkRA",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "ai-industry"
+      },
+      {
+        "name": "Lenny's Podcast (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC6t1O76G0jYXOAoYCm153dA",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "overseas-plg"
+      },
+      {
+        "name": "Machine Learning Street Talk (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCMLtBahI5DMrt0NPvDSoIRQ",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "ai-industry"
+      },
+      {
+        "name": "Latent Space (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCxBcwypKK-W3GHd_RZ9FZrQ",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "ai-coding-tools"
+      },
+      {
+        "name": "ThePrimeagen (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC8ENHE5xdFSwx71u3fDH5Xw",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "ai-coding-tools"
+      },
+      {
+        "name": "张小珺Jùn｜商业访谈录 (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC3Sv1JuKpbOx3csUO8FAo5g",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "ai-industry"
+      },
+      {
+        "name": "硅谷101 (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKV2yWPB3wn0RTZh3cTD8YA",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "ai-industry"
       }
     ],
     "reddit": {
@@ -358,11 +416,44 @@
       "overseas-plg"
     ],
     "category_groups": {
-      "ai-labs": {"limit": 6, "categories": ["ai-labs"]},
-      "ai-news": {"limit": 8, "categories": ["ai-news", "ai-cn"]},
-      "ai-tools": {"limit": 6, "categories": ["ai-tools", "ai-coding"]},
-      "ai-deep": {"limit": 4, "categories": ["ai-deep"]},
-      "plg": {"limit": 6, "categories": ["plg"]}
+      "ai-labs": {
+        "limit": 6,
+        "categories": [
+          "ai-labs"
+        ]
+      },
+      "ai-news": {
+        "limit": 8,
+        "categories": [
+          "ai-news",
+          "ai-cn"
+        ]
+      },
+      "ai-tools": {
+        "limit": 6,
+        "categories": [
+          "ai-tools",
+          "ai-coding"
+        ]
+      },
+      "ai-deep": {
+        "limit": 4,
+        "categories": [
+          "ai-deep"
+        ]
+      },
+      "plg": {
+        "limit": 6,
+        "categories": [
+          "plg"
+        ]
+      },
+      "youtube": {
+        "limit": 6,
+        "categories": [
+          "youtube"
+        ]
+      }
     },
     "default_group": "other",
     "default_group_limit": 5
