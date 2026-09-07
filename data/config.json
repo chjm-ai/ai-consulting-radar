@@ -386,8 +386,8 @@
       }
     ],
     "twitter": {
-      "enabled": false,
-      "mode": "playwright",
+      "enabled": true,
+      "mode": "apify",
       "users": [
         "karpathy",
         "simonw",
