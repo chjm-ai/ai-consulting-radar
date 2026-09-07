@@ -18,6 +18,11 @@ logger = logging.getLogger(__name__)
 _APIFY_BASE = "https://api.apify.com/v2"
 _POLL_INTERVAL = 3.0
 _MAX_WAIT = 180
+# altimis/scweet only spawns 2 concurrent workers per run on the free plan, so
+# requesting more than 2 profiles at once silently starves everyone past #2.
+# Batch requests and wait out the actor's ~60s inter-run cooldown between batches.
+_PROFILE_BATCH_SIZE = 2
+_BATCH_COOLDOWN_SEC = 65
 
 
 class TwitterScraper(BaseScraper):
@@ -45,15 +50,27 @@ class TwitterScraper(BaseScraper):
 
         logger.info(f"Fetching Twitter (Apify) for users: {users}")
 
-        run_id, dataset_id = await self._start_run(token, users)
-        if not run_id:
-            return []
+        raw_items: list = []
+        batches = [
+            users[i : i + _PROFILE_BATCH_SIZE]
+            for i in range(0, len(users), _PROFILE_BATCH_SIZE)
+        ]
+        for batch_idx, batch in enumerate(batches):
+            if batch_idx > 0:
+                await asyncio.sleep(_BATCH_COOLDOWN_SEC)
 
-        succeeded = await self._wait_for_run(token, run_id)
-        if not succeeded:
-            return []
+            run_id, dataset_id = await self._start_run(token, batch)
+            if not run_id:
+                continue
 
-        raw_items = await self._fetch_dataset(token, dataset_id)
+            succeeded = await self._wait_for_run(token, run_id)
+            if not succeeded:
+                continue
+
+            batch_items = await self._fetch_dataset(token, dataset_id)
+            logger.info(f"  batch {batch_idx + 1}/{len(batches)} {batch}: {len(batch_items)} raw items")
+            raw_items.extend(batch_items)
+
         items = []
         for raw in raw_items:
             if isinstance(raw, dict) and raw.get("noResults"):
@@ -72,7 +89,7 @@ class TwitterScraper(BaseScraper):
             "source_mode": "profiles",
             "profile_urls": users,
             "search_sort": "Latest",
-            "max_items": max(100, self.config.fetch_limit),
+            "max_items": max(100, self.config.fetch_limit * len(users)),
         }
         url = f"{_APIFY_BASE}/acts/{self.config.actor_id}/runs?token={token}"
         try:
