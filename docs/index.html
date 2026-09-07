@@ -219,9 +219,12 @@ function parseMd(md, date) {
     const score = parseFloat(itemMatch[3]);
 
     const metaMatch = block.match(/^((?:rss|reddit|hackernews|github).+)$/m);
-    const meta = metaMatch ? metaMatch[1].trim() : '';
+    const meta = metaMatch ? metaMatch[1].trim().replace(/\\(.)/g, '$1') : '';
     const metaParts = meta.split('·').map(s => s.trim());
-    const source = metaParts[1] || metaParts[0] || '未知来源';
+    const sourceType = metaParts[0] || '';
+    const source = sourceType === 'hackernews'
+      ? 'Hacker News'
+      : (metaParts[1] || sourceType || '未知来源');
 
     const sections = [];
     const sectionRe = /\*\*「(.+?)」\*\*\s*([\s\S]*?)(?=\n\n\*\*「|\n\n\*\*标签|\n---|\n$)/g;
