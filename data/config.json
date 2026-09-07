@@ -386,7 +386,20 @@
       }
     ],
     "twitter": {
-      "enabled": false
+      "enabled": false,
+      "mode": "playwright",
+      "users": [
+        "karpathy",
+        "simonw",
+        "swyx",
+        "DrJimFan",
+        "polynoamial",
+        "goodside",
+        "levelsio",
+        "marc_louvion"
+      ],
+      "fetch_limit": 10,
+      "profile": "auto"
     },
     "telegram": {
       "enabled": false
