@@ -367,6 +367,32 @@ class HorizonOrchestrator:
                         summarizer=summarizer,
                     )
 
+            # Rebuild docs/manifest.json listing all available ZH digest dates
+            try:
+                from pathlib import Path
+                import json
+                import re as _re
+
+                posts_dir = Path("docs/_posts")
+                dates = sorted(
+                    {
+                        m.group(1)
+                        for f in posts_dir.glob("*-summary-zh.md")
+                        if (m := _re.match(r"^(\d{4}-\d{2}-\d{2})-summary-zh\.md$", f.name))
+                    },
+                    reverse=True,
+                )
+                manifest_path = Path("docs/manifest.json")
+                with open(manifest_path, "w", encoding="utf-8") as f:
+                    json.dump({"dates": dates}, f, ensure_ascii=False, indent=2)
+                self.console.print(
+                    f"{self.icons['document']} Updated docs/manifest.json ({len(dates)} dates)\n"
+                )
+            except Exception as e:
+                self.console.print(
+                    f"[yellow]{self.icons['warning']} Failed to update docs/manifest.json: {e}[/yellow]\n"
+                )
+
             self.console.print(
                 f"[bold green]{self.icons['success']} "
                 "Horizon completed successfully![/bold green]"
