@@ -24,22 +24,26 @@ a:hover{text-decoration:underline}
 .header h1{font-size:24px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .header p{color:var(--muted);font-size:13px;margin-top:4px}
 
-/* Date nav */
-.date-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px}
-.date-nav button{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:all .15s}
-.date-nav button:hover{background:var(--surface2);border-color:var(--accent)}
-.date-nav span{font-size:15px;font-weight:600;min-width:120px;text-align:center}
-
 /* Profile filter */
-.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;justify-content:center}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;justify-content:center}
 .filters button{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:16px;cursor:pointer;font-size:12px;transition:all .15s}
 .filters button:hover{border-color:var(--accent);color:var(--text)}
 .filters button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
+/* Source filter */
+.source-filter{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px}
+.source-filter label{font-size:12px;color:var(--muted)}
+.source-filter select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:12px;max-width:220px}
+
 /* Stats bar */
-.stats{display:flex;gap:16px;justify-content:center;margin-bottom:20px;font-size:12px;color:var(--muted)}
+.stats{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;font-size:12px;color:var(--muted)}
 .stats span{display:flex;align-items:center;gap:4px}
 .stats .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+
+/* Date group */
+.date-group{margin-bottom:28px}
+.date-group-title{font-size:14px;font-weight:700;color:var(--muted);padding:8px 0;margin-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.date-group-title .count{font-weight:400;font-size:12px;color:var(--muted)}
 
 /* Cards */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;transition:border-color .15s}
@@ -91,13 +95,13 @@ a:hover{text-decoration:underline}
     <p>AI 咨询雷达 · 每日精选行业动态</p>
   </div>
 
-  <div class="date-nav">
-    <button onclick="changeDate(-1)">&larr; 前一天</button>
-    <span id="current-date"></span>
-    <button onclick="changeDate(1)">后一天 &rarr;</button>
-  </div>
-
   <div class="filters" id="filters"></div>
+  <div class="source-filter">
+    <label for="source-select">来源</label>
+    <select id="source-select" onchange="setSource(this.value)">
+      <option value="all">全部来源</option>
+    </select>
+  </div>
   <div class="stats" id="stats"></div>
   <div id="content"><div class="loading">加载中</div></div>
 
@@ -115,42 +119,63 @@ const PROFILE_NAMES = {
   'overseas-plg': '海外PLG小工具'
 };
 
-let currentDate = new Date();
 let allItems = [];
 let activeFilter = 'all';
+let activeSource = 'all';
 
-function pad(n) { return String(n).padStart(2, '0'); }
-function fmtDate(d) { return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function base() { return location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, ''); }
 
-function changeDate(delta) {
-  currentDate.setDate(currentDate.getDate() + delta);
-  loadDay();
-}
-
-async function loadDay() {
-  const ds = fmtDate(currentDate);
-  document.getElementById('current-date').textContent = ds;
+async function loadAll() {
   document.getElementById('content').innerHTML = '<div class="loading">加载中</div>';
   document.getElementById('filters').innerHTML = '';
   document.getElementById('stats').innerHTML = '';
 
-  const base = location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
-  const url = `${base}/_posts/${ds}-summary-zh.md`;
+  const b = base();
+  let dates = [];
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('not found');
-    let md = await res.text();
-    md = md.replace(/^---[\s\S]*?---\n*/, '');
-    allItems = parseMd(md);
-    activeFilter = 'all';
-    renderFilters();
-    renderItems();
+    const res = await fetch(`${b}/manifest.json`);
+    if (!res.ok) throw new Error('no manifest');
+    const manifest = await res.json();
+    dates = manifest.dates || [];
   } catch {
-    document.getElementById('content').innerHTML = '<div class="empty">该日期暂无数据</div>';
+    // Fallback: no manifest yet, try today only
+    const d = new Date();
+    dates = [`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`];
   }
+
+  if (!dates.length) {
+    document.getElementById('content').innerHTML = '<div class="empty">暂无数据</div>';
+    return;
+  }
+
+  const results = await Promise.all(dates.map(async ds => {
+    try {
+      const res = await fetch(`${b}/_posts/${ds}-summary-zh.md`);
+      if (!res.ok) return null;
+      let md = await res.text();
+      md = md.replace(/^---[\s\S]*?---\n*/, '');
+      return { date: ds, items: parseMd(md, ds) };
+    } catch { return null; }
+  }));
+
+  allItems = results.filter(Boolean)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .flatMap(r => r.items);
+
+  if (!allItems.length) {
+    document.getElementById('content').innerHTML = '<div class="empty">暂无数据</div>';
+    return;
+  }
+
+  activeFilter = 'all';
+  activeSource = 'all';
+  renderFilters();
+  renderSourceOptions();
+  renderStats();
+  renderItems();
 }
 
-function parseMd(md) {
+function parseMd(md, date) {
   const items = [];
   const blocks = md.split(/^---$/m).filter(b => b.trim());
   let currentProfile = '';
@@ -161,7 +186,7 @@ function parseMd(md) {
     if (profileMatch) {
       currentProfile = profileMatch[1].trim();
       for (const [id, name] of Object.entries(PROFILE_NAMES)) {
-        if (currentProfile.includes(name) || currentProfile === name) {
+        if (currentProfile.replace(/\s+/g, '') === name.replace(/\s+/g, '')) {
           currentProfileId = id;
           break;
         }
@@ -177,6 +202,8 @@ function parseMd(md) {
 
     const metaMatch = block.match(/^((?:rss|reddit|hackernews|github).+)$/m);
     const meta = metaMatch ? metaMatch[1].trim() : '';
+    const metaParts = meta.split('·').map(s => s.trim());
+    const source = metaParts[1] || metaParts[0] || '未知来源';
 
     const sections = [];
     const sectionRe = /\*\*「(.+?)」\*\*\s*([\s\S]*?)(?=\n\n\*\*「|\n\n\*\*标签|\n---|\n$)/g;
@@ -202,7 +229,7 @@ function parseMd(md) {
     }
 
     items.push({
-      title, url, score, meta, sections, tags,
+      title, url, score, meta, source, sections, tags, date,
       summary: summaryLines.join(' '),
       profile: currentProfileId,
       profileName: currentProfile
@@ -211,30 +238,65 @@ function parseMd(md) {
   return items;
 }
 
+function currentFiltered() {
+  return allItems.filter(i =>
+    (activeFilter === 'all' || i.profile === activeFilter) &&
+    (activeSource === 'all' || i.source === activeSource)
+  );
+}
+
 function renderFilters() {
   const profiles = [...new Set(allItems.map(i => i.profile))];
+  const sourceScoped = activeSource === 'all' ? allItems : allItems.filter(i => i.source === activeSource);
   const el = document.getElementById('filters');
-  let html = `<button class="${activeFilter==='all'?'active':''}" onclick="setFilter('all')">全部 (${allItems.length})</button>`;
+  let html = `<button class="${activeFilter==='all'?'active':''}" onclick="setFilter('all')">全部 (${sourceScoped.length})</button>`;
   for (const p of profiles) {
-    const count = allItems.filter(i => i.profile === p).length;
+    const count = sourceScoped.filter(i => i.profile === p).length;
     const name = PROFILE_NAMES[p] || p;
     html += `<button class="${activeFilter===p?'active':''}" onclick="setFilter('${p}')">${name} (${count})</button>`;
   }
   el.innerHTML = html;
+}
 
-  const statsEl = document.getElementById('stats');
-  const avgScore = allItems.length ? (allItems.reduce((s,i) => s+i.score, 0) / allItems.length).toFixed(1) : '0';
-  statsEl.innerHTML = `
-    <span><span class="dot" style="background:var(--accent)"></span> ${allItems.length} 条精选</span>
-    <span><span class="dot" style="background:var(--gold)"></span> 均分 ${avgScore}</span>
-    <span><span class="dot" style="background:var(--green)"></span> ${profiles.length} 个方向</span>
-  `;
+function renderSourceOptions() {
+  const sources = [...new Set(allItems.map(i => i.source))].sort((a, b) => a.localeCompare(b, 'zh'));
+  const sel = document.getElementById('source-select');
+  let html = `<option value="all">全部来源 (${allItems.length})</option>`;
+  for (const s of sources) {
+    const count = allItems.filter(i => i.source === s).length;
+    const label = s.replace(/"/g, '&quot;');
+    html += `<option value="${label}">${s} (${count})</option>`;
+  }
+  sel.innerHTML = html;
+  sel.value = activeSource;
 }
 
 function setFilter(f) {
   activeFilter = f;
   renderFilters();
+  renderStats();
   renderItems();
+}
+
+function setSource(s) {
+  activeSource = s;
+  renderFilters();
+  renderStats();
+  renderItems();
+}
+
+function renderStats() {
+  const filtered = currentFiltered();
+  const statsEl = document.getElementById('stats');
+  const avgScore = filtered.length ? (filtered.reduce((s, i) => s + i.score, 0) / filtered.length).toFixed(1) : '0';
+  const days = new Set(filtered.map(i => i.date)).size;
+  const sources = new Set(filtered.map(i => i.source)).size;
+  statsEl.innerHTML = `
+    <span><span class="dot" style="background:var(--accent)"></span> ${filtered.length} 条精选</span>
+    <span><span class="dot" style="background:var(--gold)"></span> 均分 ${avgScore}</span>
+    <span><span class="dot" style="background:var(--green)"></span> ${sources} 个来源</span>
+    <span><span class="dot" style="background:var(--orange)"></span> ${days} 天</span>
+  `;
 }
 
 function scoreClass(s) {
@@ -244,17 +306,9 @@ function scoreClass(s) {
   return 'score-low';
 }
 
-function renderItems() {
-  const filtered = activeFilter === 'all' ? allItems : allItems.filter(i => i.profile === activeFilter);
-  if (!filtered.length) {
-    document.getElementById('content').innerHTML = '<div class="empty">该分类暂无内容</div>';
-    return;
-  }
-
-  let html = '';
-  for (const item of filtered) {
-    const profileClass = `profile-${item.profile}`;
-    html += `<div class="card">
+function cardHtml(item) {
+  const profileClass = `profile-${item.profile}`;
+  return `<div class="card">
       <div class="card-header">
         <div class="card-score ${scoreClass(item.score)}">${item.score}</div>
         <div class="card-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>
@@ -269,11 +323,35 @@ function renderItems() {
         ${item.tags.length ? `<div class="card-tags">${item.tags.map(t => `<span>#${t}</span>`).join('')}</div>` : ''}
       </div>
     </div>`;
+}
+
+function renderItems() {
+  const filtered = currentFiltered();
+  if (!filtered.length) {
+    document.getElementById('content').innerHTML = '<div class="empty">暂无匹配内容</div>';
+    return;
+  }
+
+  // Group by date, preserving the descending date order items already carry
+  const order = [];
+  const groups = new Map();
+  for (const item of filtered) {
+    if (!groups.has(item.date)) { groups.set(item.date, []); order.push(item.date); }
+    groups.get(item.date).push(item);
+  }
+
+  let html = '';
+  for (const d of order) {
+    const its = groups.get(d);
+    html += `<div class="date-group">
+      <div class="date-group-title">${d} <span class="count">· ${its.length} 条</span></div>
+      ${its.map(cardHtml).join('')}
+    </div>`;
   }
   document.getElementById('content').innerHTML = html;
 }
 
-loadDay();
+loadAll();
 </script>
 </body>
 </html>
