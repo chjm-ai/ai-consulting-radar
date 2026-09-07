@@ -57,13 +57,6 @@
         "profile": "auto"
       },
       {
-        "name": "Anthropic News",
-        "url": "https://www.anthropic.com/feed.xml",
-        "enabled": true,
-        "category": "ai-labs",
-        "profile": "auto"
-      },
-      {
         "name": "Google AI Blog",
         "url": "https://blog.google/technology/ai/rss/",
         "enabled": true,
@@ -114,29 +107,8 @@
         "content_extractor": "trafilatura"
       },
       {
-        "name": "机器之心",
-        "url": "https://www.jiqizhixin.com/rss",
-        "enabled": true,
-        "category": "ai-cn",
-        "profile": "auto"
-      },
-      {
-        "name": "36kr - AI",
-        "url": "https://36kr.com/feed",
-        "enabled": true,
-        "category": "ai-cn",
-        "profile": "auto"
-      },
-      {
         "name": "Product Hunt - AI",
         "url": "https://www.producthunt.com/feed?category=artificial-intelligence",
-        "enabled": true,
-        "category": "plg",
-        "profile": "overseas-plg"
-      },
-      {
-        "name": "Indie Hackers",
-        "url": "https://www.indiehackers.com/feed.xml",
         "enabled": true,
         "category": "plg",
         "profile": "overseas-plg"
@@ -156,19 +128,138 @@
         "profile": "ai-coding-tools"
       },
       {
-        "name": "a16z AI",
-        "url": "https://a16z.com/feed/",
+        "name": "AI Tidbits Newsletter",
+        "url": "https://aititbits.substack.com/feed",
+        "enabled": true,
+        "category": "ai-news",
+        "profile": "auto"
+      },
+      {
+        "name": "Sequoia Capital - Stories",
+        "url": "https://www.sequoiacap.com/feed/",
+        "enabled": true,
+        "category": "ai-deep",
+        "profile": "ai-industry"
+      },
+      {
+        "name": "Y Combinator Blog",
+        "url": "https://www.ycombinator.com/blog/rss",
+        "enabled": true,
+        "category": "ai-deep",
+        "profile": "ai-industry"
+      },
+      {
+        "name": "Import AI",
+        "url": "https://importai.substack.com/feed",
+        "enabled": true,
+        "category": "ai-deep",
+        "profile": "ai-industry"
+      },
+      {
+        "name": "Interconnects",
+        "url": "https://www.interconnects.ai/feed",
+        "enabled": true,
+        "category": "ai-deep",
+        "profile": "auto"
+      },
+      {
+        "name": "One Useful Thing",
+        "url": "https://www.oneusefulthing.org/feed",
+        "enabled": true,
+        "category": "ai-deep",
+        "profile": "ai-vertical-apps"
+      },
+      {
+        "name": "Exponential View",
+        "url": "https://www.exponentialview.co/feed",
+        "enabled": true,
+        "category": "ai-deep",
+        "profile": "ai-industry"
+      },
+      {
+        "name": "The Rundown AI",
+        "url": "https://www.therundown.ai/feed",
+        "enabled": true,
+        "category": "ai-news",
+        "profile": "auto"
+      },
+      {
+        "name": "Stratechery",
+        "url": "https://stratechery.com/feed/",
         "enabled": true,
         "category": "ai-deep",
         "profile": "auto",
         "content_extractor": "trafilatura"
       },
       {
-        "name": "AI Tidbits Newsletter",
-        "url": "https://aititbits.substack.com/feed",
+        "name": "Not Boring",
+        "url": "https://www.notboring.co/feed",
+        "enabled": true,
+        "category": "ai-deep",
+        "profile": "auto"
+      },
+      {
+        "name": "TLDR AI",
+        "url": "https://tldr.tech/api/rss/ai",
         "enabled": true,
         "category": "ai-news",
         "profile": "auto"
+      },
+      {
+        "name": "Lenny's Newsletter",
+        "url": "https://www.lennysnewsletter.com/feed",
+        "enabled": true,
+        "category": "plg",
+        "profile": "overseas-plg"
+      },
+      {
+        "name": "Platformer",
+        "url": "https://www.platformer.news/feed",
+        "enabled": true,
+        "category": "ai-news",
+        "profile": "ai-industry"
+      },
+      {
+        "name": "Replit Blog",
+        "url": "https://blog.replit.com/feed.xml",
+        "enabled": true,
+        "category": "ai-coding",
+        "profile": "ai-coding-tools"
+      },
+      {
+        "name": "量子位",
+        "url": "https://www.qbitai.com/feed",
+        "enabled": false,
+        "category": "ai-cn",
+        "profile": "auto"
+      },
+      {
+        "name": "极客公园",
+        "url": "https://www.geekpark.net/rss",
+        "enabled": true,
+        "category": "ai-cn",
+        "profile": "auto"
+      },
+      {
+        "name": "爱范儿",
+        "url": "https://www.ifanr.com/feed",
+        "enabled": true,
+        "category": "ai-cn",
+        "profile": "auto"
+      },
+      {
+        "name": "阮一峰的网络日志",
+        "url": "https://www.ruanyifeng.com/blog/atom.xml",
+        "enabled": true,
+        "category": "ai-cn",
+        "profile": "auto"
+      },
+      {
+        "name": "GitHub Trending RSS",
+        "url": "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
+        "enabled": true,
+        "category": "ai-coding",
+        "profile": "ai-coding-tools"
       }
     ],
     "reddit": {
