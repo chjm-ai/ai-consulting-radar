@@ -60,9 +60,13 @@ a:hover{text-decoration:underline}
 .date-group-title .count{font-weight:400;font-size:12px;color:var(--muted)}
 
 /* Cards */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;transition:border-color .15s}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;transition:border-color .15s;cursor:pointer}
 .card:hover{border-color:var(--accent)}
 .card-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.card-toggle{flex-shrink:0;color:var(--muted);font-size:11px;margin-top:4px;transition:transform .15s}
+.card.expanded .card-toggle{transform:rotate(90deg)}
+.card-body{display:none}
+.card.expanded .card-body{display:block}
 .card-score{flex-shrink:0;width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff}
 .score-high{background:linear-gradient(135deg,#be185d,#e0652e)}
 .score-good{background:linear-gradient(135deg,#e0652e,#d4a017)}
@@ -348,6 +352,7 @@ function cardHtml(item) {
       <div class="card-header">
         <div class="card-score ${scoreClass(item.score)}">${item.score}</div>
         <div class="card-title"><a href="${item.url}" target="_blank" rel="noopener">${item.title}</a></div>
+        <span class="card-toggle">&#9656;</span>
       </div>
       <div class="card-meta">
         <span class="card-profile ${profileClass}">${item.profileName}</span>
@@ -386,6 +391,12 @@ function renderItems() {
   }
   document.getElementById('content').innerHTML = html;
 }
+
+document.getElementById('content').addEventListener('click', (e) => {
+  if (e.target.closest('a')) return;
+  const card = e.target.closest('.card');
+  if (card) card.classList.toggle('expanded');
+});
 
 loadAll();
 </script>
