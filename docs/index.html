@@ -153,9 +153,10 @@ async function loadAll() {
   document.getElementById('stats').innerHTML = '';
 
   const b = base();
+  const cacheKey = Date.now();
   let dates = [];
   try {
-    const res = await fetch(`${b}/manifest.json`);
+    const res = await fetch(`${b}/manifest.json?v=${cacheKey}`, { cache: 'no-store' });
     if (!res.ok) throw new Error('no manifest');
     const manifest = await res.json();
     dates = manifest.dates || [];
@@ -172,7 +173,7 @@ async function loadAll() {
 
   const results = await Promise.all(dates.map(async ds => {
     try {
-      const res = await fetch(`${b}/_posts/${ds}-summary-zh.md`);
+      const res = await fetch(`${b}/_posts/${ds}-summary-zh.md?v=${cacheKey}`, { cache: 'no-store' });
       if (!res.ok) return null;
       let md = await res.text();
       md = md.replace(/^---[\s\S]*?---\n*/, '');
