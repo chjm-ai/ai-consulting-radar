@@ -318,6 +318,104 @@
         "enabled": true,
         "category": "youtube",
         "profile": "ai-industry"
+      },
+      {
+        "name": "Viz.ai Blog",
+        "url": "https://www.viz.ai/blog/feed",
+        "enabled": false,
+        "category": "ai-vertical-apps",
+        "profile": "ai-vertical-apps"
+      },
+      {
+        "name": "Artificial Lawyer",
+        "url": "https://www.artificiallawyer.com/feed/",
+        "enabled": true,
+        "category": "ai-vertical-apps",
+        "profile": "ai-vertical-apps"
+      },
+      {
+        "name": "Finextra - AI",
+        "url": "https://www.finextra.com/rss/channel.aspx?channel=ai",
+        "enabled": true,
+        "category": "ai-vertical-apps",
+        "profile": "ai-vertical-apps"
+      },
+      {
+        "name": "Augury Blog",
+        "url": "https://www.augury.com/feed/",
+        "enabled": true,
+        "category": "ai-vertical-apps",
+        "profile": "ai-vertical-apps"
+      },
+      {
+        "name": "Khan Academy Khanmigo",
+        "url": "https://blog.khanacademy.org/khanmigo/feed",
+        "enabled": true,
+        "category": "ai-vertical-apps",
+        "profile": "ai-vertical-apps"
+      },
+      {
+        "name": "levels.io",
+        "url": "https://levels.io/rss",
+        "enabled": true,
+        "category": "plg",
+        "profile": "overseas-plg"
+      },
+      {
+        "name": "Tomasz Tunguz",
+        "url": "https://tomtunguz.com/index.xml",
+        "enabled": true,
+        "category": "plg",
+        "profile": "overseas-plg"
+      },
+      {
+        "name": "Elena Verna's Growth Scoop",
+        "url": "https://www.elenaverna.com/feed",
+        "enabled": true,
+        "category": "plg",
+        "profile": "overseas-plg"
+      },
+      {
+        "name": "Sourcegraph Blog",
+        "url": "https://sourcegraph.com/blog/feed.rss",
+        "enabled": true,
+        "category": "ai-coding",
+        "profile": "ai-coding-tools"
+      },
+      {
+        "name": "Lovable Blog",
+        "url": "https://lovable.dev/blog/rss.xml",
+        "enabled": true,
+        "category": "ai-coding",
+        "profile": "ai-coding-tools"
+      },
+      {
+        "name": "InfoQ中文站 - AI",
+        "url": "https://www.infoq.cn/feed/topic/AI",
+        "enabled": true,
+        "category": "ai-cn",
+        "profile": "auto"
+      },
+      {
+        "name": "机器之心(公众号)",
+        "url": "https://wechat2rss.xlab.app/feed/51e92aad2728acdd1fda7314be32b16639353001.xml",
+        "enabled": true,
+        "category": "ai-cn",
+        "profile": "auto"
+      },
+      {
+        "name": "Fireship (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "ai-coding-tools"
+      },
+      {
+        "name": "Two Minute Papers (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbfYPyITQ-7l4upoX8nvctg",
+        "enabled": true,
+        "category": "youtube",
+        "profile": "ai-industry"
       }
     ],
     "reddit": {
@@ -480,6 +578,12 @@
         "limit": 6,
         "categories": [
           "youtube"
+        ]
+      },
+      "ai-vertical-apps": {
+        "limit": 6,
+        "categories": [
+          "ai-vertical-apps"
         ]
       }
     },
