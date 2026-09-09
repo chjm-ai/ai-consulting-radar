@@ -48,6 +48,11 @@ data/x_cookies_*.json
 
 docs/_posts/*.md
 
+# Demo frontend: scratch data snapshots + generated build output (regenerate via demo/build_demo.py)
+data/demo_*.json
+data/images/
+demo/cluster-demo.html
+
 # Logs
 logs/*.log
 *.log

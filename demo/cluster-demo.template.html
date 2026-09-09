@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Consulting Radar</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#fafafa;
+  --surface:#ffffff;
+  --surface-alt:#f2f2f4;
+  --surface-hover:#f0f0f2;
+  --border:#eaeaec;
+  --border-hover:#d8d8dc;
+  --text:#18181b;
+  --text-secondary:#52525b;
+  --text-tertiary:#9a9aa2;
+  --accent:#4f46e5;
+  --accent-hover:#4338ca;
+  --success:#16a34a;
+  --error:#dc2626;
+  --warning:#b45309;
+  --font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+  --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#101012;--surface:#17171a;--surface-alt:#1c1c20;--surface-hover:#202024;
+    --border:#232327;--border-hover:#333339;
+    --text:#f2f2f4;--text-secondary:#a8a8b0;--text-tertiary:#6c6c76;
+    --accent:#818cf8;--accent-hover:#a5b4fc;
+    --success:#4ade80;--error:#f87171;--warning:#fbbf24;
+  }
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.6}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:2px}
+button{font-family:var(--font-sans)}
+
+/* ---------- 整体布局:固定双栏,各自独立滚动 ---------- */
+.app{display:flex;height:100vh;width:100vw;overflow:hidden}
+.sidebar{
+  width:240px;flex-shrink:0;height:100vh;overflow-y:auto;
+  background:var(--bg);padding:16px 8px 20px;
+}
+.main{flex:1;height:100vh;overflow-y:auto;padding:32px 40px;background:var(--surface)}
+.main-inner{max-width:720px;margin:0 auto}
+
+/* ---------- 侧边栏品牌区 ---------- */
+.sidebar-brand{display:flex;align-items:center;gap:8px;padding:6px 8px 20px}
+.brand-mark{width:22px;height:22px;flex-shrink:0;color:var(--accent)}
+.brand-mark svg{width:100%;height:100%}
+.brand-name{font-size:14px;font-weight:700;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icon-btn{
+  flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;color:var(--text-tertiary);cursor:pointer;border-radius:6px;
+  transition:background-color .12s ease,color .12s ease;
+}
+.icon-btn:hover{background:var(--surface-hover);color:var(--text)}
+.icon-btn svg{width:15px;height:15px}
+.search-wrap{display:none;padding:0 8px 14px}
+.search-wrap.open{display:block}
+
+/* ---------- 侧边栏导航 ---------- */
+.nav-group-label{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text-tertiary);padding:0 12px 6px}
+.nav-group{display:flex;flex-direction:column;margin-top:22px}
+.nav-group.nav-group-first{margin-top:0}
+.nav-item{
+  display:block;width:100%;text-align:left;padding:6px 12px;border-radius:6px;
+  font-size:13px;color:var(--text-secondary);background:transparent;border:none;
+  cursor:pointer;transition:color .12s ease,background-color .12s ease;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.nav-item:hover{background:var(--surface-hover);color:var(--text)}
+.nav-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.nav-item.active{color:var(--accent);font-weight:600}
+.nav-empty-hint{color:var(--text-tertiary);font-size:12px;padding:6px 12px;line-height:1.6}
+
+.search-input{
+  width:100%;background:var(--surface-alt);border:1px solid transparent;
+  color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;font-family:var(--font-sans);
+}
+.search-input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.search-input::placeholder{color:var(--text-tertiary)}
+
+/* 星标行:整行共享同一个 hover 矩形,星号在里面,默认隐藏,hover/已加星才显示 */
+.src-row{display:flex;align-items:center;gap:2px;border-radius:6px;transition:background-color .12s ease}
+.src-row:hover{background:var(--surface-hover)}
+.src-row .nav-item{flex:1;min-width:0}
+.src-row .nav-item:hover{background:transparent;color:var(--text)}
+.star-btn{
+  opacity:0;flex-shrink:0;width:26px;height:26px;background:none;border:none;
+  color:var(--text-tertiary);font-size:13px;cursor:pointer;
+  transition:opacity .12s ease,color .12s ease;
+}
+.src-row:hover .star-btn,.star-btn:focus-visible{opacity:1}
+.star-btn.starred{opacity:1;color:var(--warning)}
+.star-btn:hover{color:var(--warning)}
+
+/* ---------- 主内容通用 ---------- */
+.view-title{font-size:13px;font-weight:600;color:var(--text-tertiary);margin-bottom:20px}
+.view-title .n{font-weight:400}
+.filter-bar{display:none;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--text-tertiary)}
+.filter-bar.show{display:flex}
+.filter-bar .clear{color:var(--accent);cursor:pointer}
+.pane{display:none}
+.pane.active{display:block}
+
+/* ---------- 内容行(替代card) ---------- */
+.row{display:grid;grid-template-columns:1fr;gap:4px;padding:14px 0}
+.row.has-time{grid-template-columns:56px 1fr;gap:4px 16px;align-items:start}
+.row:hover{background:var(--surface-hover);margin:0 -14px;padding:14px 14px;border-radius:8px}
+.row.has-time:hover{margin:0 -14px}
+.row-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.6;cursor:pointer}
+.row-title a{color:inherit}
+.row-title a:hover{color:var(--accent)}
+.cluster-count-suffix{color:var(--text-tertiary);font-weight:400;font-size:12px;white-space:nowrap}
+.row-secondary{font-size:13px;color:var(--text-secondary);line-height:1.75;margin-top:4px}
+.row-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline;font-size:12px;color:var(--text-tertiary);margin-top:6px}
+.row-source{cursor:pointer;background:none;border:none;color:var(--text-tertiary);font-size:12px;padding:0;font-family:var(--font-sans)}
+.row-source:hover{color:var(--accent)}
+.row-time{font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);padding-top:2px}
+.row-dim{opacity:.4}
+
+.row-members{margin-top:8px;padding-left:16px}
+.row-members .row{padding:10px 0}
+.row-members .row-title{font-size:13px;font-weight:400;color:var(--text-secondary)}
+
+/* ---------- 日期分组 ---------- */
+.date-group{margin-bottom:32px}
+.date-group-title{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text-tertiary);margin-bottom:8px}
+.date-group-title .count{font-weight:400}
+
+.empty-hint{color:var(--text-tertiary);font-size:13px;padding:24px 0}
+
+/* ---------- 数据源管理 ---------- */
+.src-note{font-size:12px;color:var(--text-tertiary);margin-bottom:20px;line-height:1.7}
+.src-toolbar{margin-bottom:14px}
+.src-toolbar input{width:100%;max-width:320px;background:var(--surface-alt);border:1px solid transparent;color:var(--text);padding:7px 12px;border-radius:6px;font-size:13px;font-family:var(--font-sans)}
+.src-toolbar input:focus{outline:none;border-color:var(--accent)}
+.cat-chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px}
+.cat-chips button{background:none;border:none;color:var(--text-tertiary);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px}
+.cat-chips button:hover{background:var(--surface-hover);color:var(--text)}
+.cat-chips button.active{color:var(--accent);font-weight:600}
+.src-summary{font-size:12px;color:var(--text-tertiary);margin-bottom:8px}
+
+.src-mgmt-row{display:grid;grid-template-columns:24px 1fr 70px 110px 90px 24px;gap:10px;align-items:center;padding:9px 0;font-size:13px}
+.src-mgmt-row:hover{background:var(--surface-hover);margin:0 -14px;padding:9px 14px;border-radius:6px}
+.src-mgmt-row.removed{opacity:.35}
+.src-mgmt-row .m-star{opacity:0;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:13px}
+.src-mgmt-row:hover .m-star,.src-mgmt-row.removed .m-star{opacity:1}
+.src-mgmt-row .m-star.starred{opacity:1;color:var(--warning)}
+.src-mgmt-row .m-name{font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-mgmt-row .m-type,.src-mgmt-row .m-cat{color:var(--text-tertiary);font-size:11px}
+.src-mgmt-row .m-count{color:var(--text-tertiary);font-size:11px;text-align:right}
+.src-mgmt-row .m-del{background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:13px}
+.src-mgmt-row .m-del:hover{color:var(--error)}
+.src-mgmt-row .m-undo{display:none;background:none;border:none;color:var(--accent);cursor:pointer;font-size:11px}
+.src-mgmt-row.removed .m-undo{display:inline-block}
+.src-mgmt-row.removed .m-del{display:none}
+
+/* ---------- 响应式 ---------- */
+@media(max-width:860px){
+  .app{flex-direction:column;height:auto;overflow:visible}
+  .sidebar{
+    width:100%;height:auto;overflow-x:auto;overflow-y:visible;
+    display:flex;align-items:center;gap:4px;padding:10px 12px;
+  }
+  .sidebar-brand,.search-wrap,.sidebar-lists{display:none}
+  .sidebar .nav-group{flex-direction:row;margin-top:0}
+  .sidebar .nav-item{width:auto;white-space:nowrap;flex-shrink:0}
+  .main{height:auto;overflow-y:visible;padding:20px 16px}
+  .row.has-time{grid-template-columns:1fr;gap:2px}
+  .row-time{padding-top:0}
+  .src-mgmt-row{grid-template-columns:20px 1fr 40px;gap:6px}
+  .src-mgmt-row .m-cat,.src-mgmt-row .m-count,.src-mgmt-row .m-del{display:none}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="2.2" fill="currentColor"/>
+          <circle cx="12" cy="12" r="6.5" stroke="currentColor" stroke-width="1.4" opacity="0.55"/>
+          <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.4" opacity="0.25"/>
+        </svg>
+      </span>
+      <span class="brand-name">AI Consulting Radar</span>
+      <button class="icon-btn" id="search-toggle" title="搜索信息源" aria-label="搜索信息源">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+          <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="search-wrap" id="search-wrap">
+      <input type="text" id="sidebar-search" class="search-input" placeholder="搜索信息源…">
+    </div>
+
+    <div class="nav-group nav-group-first">
+      <button class="nav-item active" data-view="news">新闻汇总</button>
+      <button class="nav-item" data-view="social">社媒汇总</button>
+    </div>
+
+    <div class="sidebar-lists">
+      <div class="nav-group">
+        <div class="nav-group-label">重点关注</div>
+        <div id="ref-nav"></div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">全部信息源</div>
+        <div id="all-sources-nav"></div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-item" data-view="sources">数据源管理</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="main-inner">
+      <div class="pane active" id="view-news">
+        <div class="filter-bar" id="filter-bar-news">
+          按来源筛选：<b id="filter-name-news"></b>
+          <span class="clear" data-clear="news">清除</span>
+        </div>
+        <div class="view-title">新闻汇总 <span class="n" id="news-count"></span></div>
+        <div id="news-clusters"></div>
+      </div>
+
+      <div class="pane" id="view-social">
+        <div class="filter-bar" id="filter-bar-social">
+          按来源筛选：<b id="filter-name-social"></b>
+          <span class="clear" data-clear="social">清除</span>
+        </div>
+        <div class="view-title">社媒汇总 <span class="n" id="social-count"></span></div>
+        <div id="social-clusters"></div>
+      </div>
+
+      <div class="pane" id="view-sources">
+        <div class="src-note">星标（重点关注）和删除都只在本页面即时生效，不会写回真实配置文件；确认交互方式后再接入正式流程。</div>
+        <div class="src-toolbar">
+          <input type="text" id="src-search" placeholder="搜索数据源名称…">
+        </div>
+        <div class="cat-chips" id="cat-chips"></div>
+        <div class="src-summary" id="src-summary"></div>
+        <div id="src-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = __DATA__;
+
+const CAT_NAMES = {
+  'ai-labs':'大厂/实验室','ai-news':'综合科技媒体','ai-tools':'通用工具','ai-deep':'深度技术',
+  'plg':'海外PLG','youtube':'YouTube','ai-vertical-apps':'垂直AI应用','ai-coding':'AI编程工具',
+  'ai-cn':'中文媒体','uncategorized':'未分类'
+};
+
+let activeView = 'news';
+let filters = { news: null, social: null };
+let starredSources = new Set(DATA.default_starred);
+
+/* ---------- 视图切换 ---------- */
+
+function switchView(view) {
+  activeView = view;
+  document.querySelectorAll('[data-view]').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+
+  if (view.startsWith('ref:')) {
+    renderRefPane(view.slice(4));
+  } else {
+    document.getElementById(`view-${view}`).classList.add('active');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const navBtn = e.target.closest('[data-view]');
+  if (navBtn) { switchView(navBtn.dataset.view); return; }
+
+  const clearBtn = e.target.closest('[data-clear]');
+  if (clearBtn) { setFilter(clearBtn.dataset.clear, null); return; }
+
+  const starBtn = e.target.closest('[data-star-toggle]');
+  if (starBtn) { toggleStar(starBtn.dataset.starToggle); return; }
+
+  const src = e.target.closest('[data-src]');
+  if (src) {
+    const name = src.dataset.src;
+    const pane = src.closest('#view-news') ? 'news' : (src.closest('#view-social') ? 'social' : null);
+    if (starredSources.has(name)) { switchView('ref:' + name); return; }
+    if (pane) setFilter(pane, name);
+    return;
+  }
+
+  if (e.target.closest('a')) return;
+  const row = e.target.closest('.row[data-toggle]');
+  if (row) row.classList.toggle('expanded');
+});
+
+function setFilter(pane, name) {
+  filters[pane] = name;
+  const bar = document.getElementById(`filter-bar-${pane}`);
+  if (name) { bar.classList.add('show'); document.getElementById(`filter-name-${pane}`).textContent = name; }
+  else { bar.classList.remove('show'); }
+  if (pane === 'news') renderNews(); else renderSocial();
+}
+
+/* ---------- 新闻汇总(聚类) ---------- */
+
+function clusterRowHtml(c, filterName) {
+  const uniqueSrcs = [...new Set(c.members.map(m => m.source_name))];
+  const membersHtml = c.members.map(m => `
+    <div class="row ${filterName && m.source_name!==filterName ? 'row-dim' : ''}">
+      <div class="row-title"><a href="${m.url}" target="_blank" rel="noopener">${m.title}</a></div>
+      <div class="row-meta"><button class="row-source" data-src="${m.source_name}">${m.source_name}</button></div>
+    </div>
+  `).join('');
+  return `
+    <div class="row" data-toggle>
+      <div class="row-title">${c.topic} <span class="cluster-count-suffix">· ${c.members.length} 个来源</span></div>
+      <div class="row-secondary">${c.summary}</div>
+      <div class="row-meta">${uniqueSrcs.map(n => `<button class="row-source" data-src="${n}">${n}</button>`).join('')}</div>
+      <div class="row-members">${membersHtml}</div>
+    </div>`;
+}
+
+function renderNews() {
+  const f = filters.news;
+  let visible = 0;
+  const html = DATA.news.clusters.map(c => {
+    const matches = f ? c.members.some(m => m.source_name === f) : true;
+    if (!matches) return '';
+    visible++;
+    return clusterRowHtml(c, f);
+  }).join('');
+  document.getElementById('news-count').textContent = `(${visible}${f ? ' / ' + DATA.news.clusters.length : ''})`;
+  document.getElementById('news-clusters').innerHTML = html || `<div class="empty-hint">该来源近期没有进入话题聚合的内容</div>`;
+}
+
+/* ---------- 按日期分组的单条列表 ---------- */
+
+function groupByDate(items) {
+  const groups = new Map();
+  const order = [];
+  for (const it of items) {
+    const d = it.published_at.slice(0, 10);
+    if (!groups.has(d)) { groups.set(d, []); order.push(d); }
+    groups.get(d).push(it);
+  }
+  order.sort((a, b) => b.localeCompare(a));
+  return order.map(d => ({ date: d, items: groups.get(d) }));
+}
+
+function dateGroupedHtml(items, rowFn) {
+  if (!items.length) return `<div class="empty-hint">近72小时没有内容</div>`;
+  return groupByDate(items).map(g => `
+    <div class="date-group">
+      <div class="date-group-title">${g.date} <span class="count">· ${g.items.length} 条</span></div>
+      <div>${g.items.map(rowFn).join('')}</div>
+    </div>
+  `).join('');
+}
+
+function singleRowHtml(it, showSrc) {
+  return `
+    <div class="row has-time">
+      <span class="row-time">${it.published_at.slice(11,16)}</span>
+      <div>
+        <div class="row-title"><a href="${it.url}" target="_blank" rel="noopener">${it.title}</a></div>
+        ${showSrc ? `<div class="row-meta"><button class="row-source" data-src="${it.source_name}">${it.source_name}</button></div>` : ''}
+      </div>
+    </div>`;
+}
+
+/* ---------- 社媒汇总(不聚合) ---------- */
+
+function renderSocial() {
+  const f = filters.social;
+  const items = f ? DATA.social_items.filter(s => s.source_name === f) : DATA.social_items;
+  document.getElementById('social-count').textContent = `(${items.length})`;
+  document.getElementById('social-clusters').innerHTML = dateGroupedHtml(items, it => singleRowHtml(it, true));
+}
+
+/* ---------- 重点关注 + 全部信息源(星标驱动) ---------- */
+
+function renderRefNav() {
+  const names = [...starredSources].sort((a, b) => a.localeCompare(b, 'zh'));
+  document.getElementById('ref-nav').innerHTML = names.map(name => `
+    <div class="src-row">
+      <button class="nav-item ${activeView==='ref:'+name?'active':''}" data-view="ref:${name}">${name}</button>
+      <button class="star-btn starred" data-star-toggle="${name}" title="取消重点关注">★</button>
+    </div>
+  `).join('') || `<div class="nav-empty-hint">在"全部信息源"中点击☆添加</div>`;
+}
+
+function renderAllSourcesNav() {
+  const q = sidebarSearch.toLowerCase();
+  const names = DATA.sources.map(s => s.name)
+    .filter(n => !q || n.toLowerCase().includes(q))
+    .sort((a, b) => a.localeCompare(b, 'zh'));
+  document.getElementById('all-sources-nav').innerHTML = names.map(name => {
+    const starred = starredSources.has(name);
+    return `<div class="src-row">
+      <button class="nav-item ${activeView==='ref:'+name?'active':''}" data-view="ref:${name}">${name}</button>
+      <button class="star-btn ${starred?'starred':''}" data-star-toggle="${name}" title="${starred?'取消重点关注':'加入重点关注'}">${starred?'★':'☆'}</button>
+    </div>`;
+  }).join('');
+}
+
+let sidebarSearch = '';
+document.getElementById('sidebar-search').addEventListener('input', e => {
+  sidebarSearch = e.target.value;
+  renderAllSourcesNav();
+});
+
+document.getElementById('search-toggle').addEventListener('click', () => {
+  const wrap = document.getElementById('search-wrap');
+  const input = document.getElementById('sidebar-search');
+  const opening = !wrap.classList.contains('open');
+  wrap.classList.toggle('open', opening);
+  if (opening) {
+    input.focus();
+  } else {
+    input.value = '';
+    sidebarSearch = '';
+    renderAllSourcesNav();
+  }
+});
+
+function toggleStar(name) {
+  if (starredSources.has(name)) starredSources.delete(name);
+  else starredSources.add(name);
+  renderRefNav();
+  renderAllSourcesNav();
+  renderSourceList();
+  if (activeView === 'ref:' + name && !starredSources.has(name)) switchView('news');
+}
+
+function renderRefPane(name) {
+  let pane = document.getElementById('view-ref-dynamic');
+  if (!pane) {
+    pane = document.createElement('div');
+    pane.className = 'pane';
+    pane.id = 'view-ref-dynamic';
+    document.querySelector('.main-inner').appendChild(pane);
+  }
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  pane.classList.add('active');
+
+  const items = DATA.channel_items[name] || [];
+  pane.innerHTML = `
+    <div class="view-title">${name} <span class="n">(${items.length})</span></div>
+    ${dateGroupedHtml(items, it => singleRowHtml(it, false))}`;
+}
+
+/* ---------- 数据源管理 ---------- */
+let activeCat = 'all';
+let searchQuery = '';
+let removedSources = new Set();
+
+function renderCatChips() {
+  const cats = [...new Set(DATA.sources.map(s => s.category))];
+  const el = document.getElementById('cat-chips');
+  el.innerHTML = `<button class="${activeCat==='all'?'active':''}" data-cat="all">全部 (${DATA.sources.length})</button>` +
+    cats.map(c => {
+      const count = DATA.sources.filter(s => s.category === c).length;
+      return `<button class="${activeCat===c?'active':''}" data-cat="${c}">${CAT_NAMES[c]||c} (${count})</button>`;
+    }).join('');
+}
+
+function renderSourceList() {
+  let list = DATA.sources;
+  if (activeCat !== 'all') list = list.filter(s => s.category === activeCat);
+  if (searchQuery) list = list.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const activeN = list.filter(s => !removedSources.has(s.name)).length;
+  document.getElementById('src-summary').textContent =
+    `显示 ${list.length} 个源（当前视图内已删除 ${list.length - activeN} 个）`;
+
+  document.getElementById('src-list').innerHTML = list.map(s => {
+    const removed = removedSources.has(s.name);
+    const starred = starredSources.has(s.name);
+    return `
+    <div class="src-mgmt-row ${removed?'removed':''}" data-name="${s.name}">
+      <button class="m-star ${starred?'starred':''}" title="${starred?'取消重点关注':'加入重点关注'}">${starred?'★':'☆'}</button>
+      <span class="m-name">${s.name}</span>
+      <span class="m-type">${s.type}</span>
+      <span class="m-cat">${CAT_NAMES[s.category]||s.category}</span>
+      <span class="m-count">近72h · ${s.recent_count}条</span>
+      <button class="m-del" title="删除">✕</button>
+      <button class="m-undo">撤销</button>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('cat-chips').addEventListener('click', e => {
+  const btn = e.target.closest('[data-cat]');
+  if (!btn) return;
+  activeCat = btn.dataset.cat;
+  renderCatChips();
+  renderSourceList();
+});
+
+document.getElementById('src-search').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  renderSourceList();
+});
+
+document.getElementById('src-list').addEventListener('click', e => {
+  const row = e.target.closest('.src-mgmt-row');
+  if (!row) return;
+  const name = row.dataset.name;
+  if (e.target.classList.contains('m-del')) { removedSources.add(name); renderSourceList(); }
+  else if (e.target.classList.contains('m-undo')) { removedSources.delete(name); renderSourceList(); }
+  else if (e.target.classList.contains('m-star')) { toggleStar(name); renderRefNav(); renderAllSourcesNav(); }
+});
+
+/* ---------- init ---------- */
+renderRefNav();
+renderAllSourcesNav();
+renderNews();
+renderSocial();
+renderCatChips();
+renderSourceList();
+</script>
+</body>
+</html>
