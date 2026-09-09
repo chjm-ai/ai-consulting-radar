@@ -1410,6 +1410,126 @@
         "enabled": true,
         "category": "ai-coding",
         "profile": "ai-coding-tools"
+      },
+      {
+        "name": "Chip Huyen",
+        "url": "https://huyenchip.com/feed.xml",
+        "enabled": true
+      },
+      {
+        "name": "Eugene Yan",
+        "url": "https://eugeneyan.com/rss/",
+        "enabled": true
+      },
+      {
+        "name": "Lilian Weng",
+        "url": "https://lilianweng.github.io/index.xml",
+        "enabled": true
+      },
+      {
+        "name": "Jay Alammar",
+        "url": "https://jalammar.github.io/feed.xml",
+        "enabled": true
+      },
+      {
+        "name": "Elad Gil",
+        "url": "https://blog.eladgil.com/feed",
+        "enabled": true
+      },
+      {
+        "name": "Byrne Hobart (The Diff)",
+        "url": "https://www.thediff.co/feed",
+        "enabled": true
+      },
+      {
+        "name": "Gwern Branwen",
+        "url": "https://gwern.net/atom",
+        "enabled": true
+      },
+      {
+        "name": "Rohit Krishnan (Strange Loop Canon)",
+        "url": "https://www.strangeloopcanon.com/feed",
+        "enabled": true
+      },
+      {
+        "name": "Transformer Circuits (Anthropic)",
+        "url": "https://transformer-circuits.pub/feed.xml",
+        "enabled": true
+      },
+      {
+        "name": "Answer.AI",
+        "url": "https://www.answer.ai/index.xml",
+        "enabled": true
+      },
+      {
+        "name": "EleutherAI Blog",
+        "url": "https://blog.eleuther.ai/index.xml",
+        "enabled": true
+      },
+      {
+        "name": "Vicki Boykis",
+        "url": "https://vickiboykis.com/index.xml",
+        "enabled": true
+      },
+      {
+        "name": "swyx",
+        "url": "https://www.swyx.io/rss.xml",
+        "enabled": true
+      },
+      {
+        "name": "Alignment Forum",
+        "url": "https://www.alignmentforum.org/feed.xml?view=rss",
+        "enabled": true
+      },
+      {
+        "name": "Data Machina",
+        "url": "https://datamachina.substack.com/feed",
+        "enabled": true
+      },
+      {
+        "name": "Andrej Karpathy (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCXUPKJO5MZQN11PqgIvyuvQ",
+        "enabled": true
+      },
+      {
+        "name": "Umar Jamil (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCtAcpQcYerN8xxZJYTfWBMw",
+        "enabled": true
+      },
+      {
+        "name": "Aleksa Gordić - AI Epiphany (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCj8shE7aIn4Yawwbo2FceCQ",
+        "enabled": true
+      },
+      {
+        "name": "sentdex (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCfzlCWGWYyIQ0aLC5w48gBQ",
+        "enabled": true
+      },
+      {
+        "name": "The AI Daily Brief (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCKelCK4ZaO6HeEI1KQjqzWA",
+        "enabled": true
+      },
+      {
+        "name": "Yannic Kilcher (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCZHmQk67mSJgfCCTn7xBfew",
+        "enabled": true
+      },
+      {
+        "name": "geohot (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCx6g0AfA8YBkGqWwPxVYl3w",
+        "enabled": true
+      },
+      {
+        "name": "Trelis Research (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCruC3Lkt_-StdHlPiyWbPSg",
+        "enabled": true
+      },
+      {
+        "name": "Prompt Engineering (YouTube)",
+        "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCDq7SjbgRKty5TgGafW8Clg",
+        "enabled": true
       }
     ],
     "reddit": {
@@ -1478,7 +1598,7 @@
       }
     ],
     "twitter": {
-      "enabled": true,
+      "enabled": false,
       "mode": "apify",
       "users": [
         "karpathy",
