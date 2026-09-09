@@ -1444,7 +1444,7 @@
       {
         "name": "Gwern Branwen",
         "url": "https://gwern.net/atom",
-        "enabled": true
+        "enabled": false
       },
       {
         "name": "Rohit Krishnan (Strange Loop Canon)",
@@ -1484,7 +1484,7 @@
       {
         "name": "Data Machina",
         "url": "https://datamachina.substack.com/feed",
-        "enabled": true
+        "enabled": false
       },
       {
         "name": "Andrej Karpathy (YouTube)",
