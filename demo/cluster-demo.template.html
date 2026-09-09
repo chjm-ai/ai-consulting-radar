@@ -42,17 +42,20 @@ button{font-family:var(--font-sans)}
 /* ---------- 整体布局:固定双栏,各自独立滚动 ---------- */
 .app{display:flex;height:100vh;width:100vw;overflow:hidden}
 .sidebar{
-  width:240px;flex-shrink:0;height:100vh;overflow-y:auto;
-  background:var(--bg);padding:16px 8px 20px;
+  width:248px;flex-shrink:0;height:100vh;overflow:hidden;
+  background:var(--bg);display:flex;flex-direction:column;
 }
-.main{flex:1;height:100vh;overflow-y:auto;padding:32px 40px;background:var(--surface)}
-.main-inner{max-width:720px;margin:0 auto}
+.sidebar-scroll{flex:1;overflow-y:auto;padding:16px 8px 8px}
+.sidebar-foot{flex-shrink:0;padding:6px 8px 12px;border-top:1px solid var(--border)}
+.main{flex:1;height:100vh;overflow-y:auto;padding:32px 40px 96px;background:var(--surface);scroll-behavior:smooth}
+.main-inner{max-width:700px;margin:0 auto}
 
 /* ---------- 侧边栏品牌区 ---------- */
-.sidebar-brand{display:flex;align-items:center;gap:8px;padding:6px 8px 20px}
+.sidebar-brand{display:flex;align-items:center;gap:8px;padding:6px 8px 2px}
 .brand-mark{width:22px;height:22px;flex-shrink:0;color:var(--accent)}
 .brand-mark svg{width:100%;height:100%}
 .brand-name{font-size:14px;font-weight:700;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brand-meta{font-size:11px;color:var(--text-tertiary);padding:0 8px 16px 38px;line-height:1.5}
 .icon-btn{
   flex-shrink:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;
   background:none;border:none;color:var(--text-tertiary);cursor:pointer;border-radius:6px;
@@ -60,8 +63,6 @@ button{font-family:var(--font-sans)}
 }
 .icon-btn:hover{background:var(--surface-hover);color:var(--text)}
 .icon-btn svg{width:15px;height:15px}
-.search-wrap{display:none;padding:0 8px 14px}
-.search-wrap.open{display:block}
 
 /* ---------- 侧边栏导航 ---------- */
 .nav-group-label{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text-tertiary);padding:0 12px 6px}
@@ -78,6 +79,19 @@ button{font-family:var(--font-sans)}
 .nav-item.active{color:var(--accent);font-weight:600}
 .nav-empty-hint{color:var(--text-tertiary);font-size:12px;padding:6px 12px;line-height:1.6}
 
+/* 可折叠分组头 */
+.nav-disclosure{
+  display:flex;align-items:center;gap:4px;width:100%;background:none;border:none;cursor:pointer;
+  font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text-tertiary);
+  padding:2px 12px 6px;border-radius:6px;text-align:left;
+}
+.nav-disclosure:hover{color:var(--text-secondary)}
+.nav-disclosure .chev{width:11px;height:11px;transition:transform .15s ease;flex-shrink:0}
+.nav-disclosure[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.nav-collapsible{display:none}
+.nav-collapsible.open{display:block}
+
+.search-wrap{padding:0 8px 8px}
 .search-input{
   width:100%;background:var(--surface-alt);border:1px solid transparent;
   color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;font-family:var(--font-sans);
@@ -99,9 +113,14 @@ button{font-family:var(--font-sans)}
 .star-btn.starred{opacity:1;color:var(--warning)}
 .star-btn:hover{color:var(--warning)}
 
+/* ---------- 移动端顶栏(桌面隐藏) ---------- */
+.topbar{display:none}
+.scrim{display:none}
+
 /* ---------- 主内容通用 ---------- */
-.view-title{font-size:13px;font-weight:600;color:var(--text-tertiary);margin-bottom:20px}
-.view-title .n{font-weight:400}
+.view-head{margin-bottom:22px}
+.view-title{font-size:20px;font-weight:700;color:var(--text);line-height:1.35;letter-spacing:-.01em}
+.view-sub{font-size:12px;color:var(--text-tertiary);margin-top:4px}
 .filter-bar{display:none;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--text-tertiary)}
 .filter-bar.show{display:flex}
 .filter-bar .clear{color:var(--accent);cursor:pointer}
@@ -110,30 +129,69 @@ button{font-family:var(--font-sans)}
 
 /* ---------- 内容行(替代card) ---------- */
 .row{display:grid;grid-template-columns:1fr;gap:4px;padding:14px 0}
-.row.has-time{grid-template-columns:56px 1fr;gap:4px 16px;align-items:start}
-.row:hover{background:var(--surface-hover);margin:0 -14px;padding:14px 14px;border-radius:8px}
-.row.has-time:hover{margin:0 -14px}
-.row-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.6;cursor:pointer}
+.row.has-time{grid-template-columns:52px 1fr;gap:4px 16px;align-items:start}
+.row:hover,.row.cursor{background:var(--surface-hover);margin:0 -14px;padding:14px 14px;border-radius:8px}
+.row.cursor{box-shadow:inset 2px 0 0 var(--accent)}
+.row-title{font-size:17px;font-weight:650;color:var(--text);line-height:1.5;letter-spacing:-.005em}
+.row[data-toggle] .row-title{cursor:pointer}
 .row-title a{color:inherit}
 .row-title a:hover{color:var(--accent)}
-.cluster-count-suffix{color:var(--text-tertiary);font-weight:400;font-size:12px;white-space:nowrap}
-.row-secondary{font-size:13px;color:var(--text-secondary);line-height:1.75;margin-top:4px}
-.row-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline;font-size:12px;color:var(--text-tertiary);margin-top:6px}
-.row-source{cursor:pointer;background:none;border:none;color:var(--text-tertiary);font-size:12px;padding:0;font-family:var(--font-sans)}
-.row-source:hover{color:var(--accent)}
-.row-time{font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary);padding-top:2px}
+.row-title a:visited{color:var(--text-tertiary)}
+.ext{display:inline-block;width:9px;height:9px;margin-left:3px;opacity:.4;vertical-align:1px}
+.row-toggle{
+  display:inline-flex;align-items:center;gap:3px;margin-left:6px;
+  color:var(--text-tertiary);font-weight:400;font-size:12px;white-space:nowrap;vertical-align:2px;
+}
+.row-toggle .chev{width:11px;height:11px;transition:transform .15s ease}
+.row.expanded .row-toggle .chev{transform:rotate(180deg)}
+.row-secondary{
+  font-size:14px;color:var(--text-secondary);line-height:1.75;margin-top:5px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.row.expanded .row-secondary{display:block;overflow:visible}
+.row-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--text-tertiary);margin-top:8px}
+.row-source{
+  cursor:pointer;background:var(--surface-alt);border:none;color:var(--text-tertiary);
+  font-size:12px;padding:2px 8px;border-radius:4px;font-family:var(--font-sans);
+  transition:color .12s ease,background-color .12s ease;
+}
+.row-source:hover{color:var(--accent);background:var(--surface-hover)}
+.row-source.repeat{opacity:.45}
+.chip-extra{display:none}
+.row.expanded .chip-extra{display:inline-block}
+.row.expanded .chip-more{display:none}
+.chip-more{color:var(--text-tertiary);font-size:12px;padding:2px 4px}
+.row-time{font-family:var(--font-mono);font-size:12px;color:var(--text-tertiary);padding-top:4px}
 .row-dim{opacity:.4}
 
-.row-members{margin-top:8px;padding-left:16px}
-.row-members .row{padding:10px 0}
-.row-members .row-title{font-size:13px;font-weight:400;color:var(--text-secondary)}
+.row-members{display:none;margin-top:10px;padding-left:14px;border-left:2px solid var(--border)}
+.row.expanded .row-members{display:block}
+.row-members .row{padding:9px 0}
+.row-members .row:hover{margin:0 -10px;padding:9px 10px}
+.row-members .row-title{font-size:13px;font-weight:400;color:var(--text-secondary);line-height:1.6}
+.row-members .row-meta{margin-top:3px}
 
 /* ---------- 日期分组 ---------- */
-.date-group{margin-bottom:32px}
-.date-group-title{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text-tertiary);margin-bottom:8px}
+.date-group{margin-bottom:28px}
+.date-group-title{
+  position:sticky;top:-1px;z-index:5;background:var(--surface);
+  font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--text-tertiary);
+  padding:6px 0;margin-bottom:2px;
+}
 .date-group-title .count{font-weight:400}
 
 .empty-hint{color:var(--text-tertiary);font-size:13px;padding:24px 0}
+
+/* ---------- 回到顶部 ---------- */
+.to-top{
+  position:fixed;right:24px;bottom:24px;width:36px;height:36px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--border);color:var(--text-tertiary);
+  cursor:pointer;display:none;align-items:center;justify-content:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.08);z-index:40;
+}
+.to-top.show{display:flex}
+.to-top:hover{color:var(--text);border-color:var(--border-hover)}
+.to-top svg{width:14px;height:14px}
 
 /* ---------- 数据源管理 ---------- */
 .src-note{font-size:12px;color:var(--text-tertiary);margin-bottom:20px;line-height:1.7}
@@ -161,95 +219,122 @@ button{font-family:var(--font-sans)}
 .src-mgmt-row.removed .m-undo{display:inline-block}
 .src-mgmt-row.removed .m-del{display:none}
 
-/* ---------- 响应式 ---------- */
+/* ---------- 响应式:侧栏改抽屉 ---------- */
 @media(max-width:860px){
-  .app{flex-direction:column;height:auto;overflow:visible}
-  .sidebar{
-    width:100%;height:auto;overflow-x:auto;overflow-y:visible;
-    display:flex;align-items:center;gap:4px;padding:10px 12px;
+  .app{display:block;height:auto;overflow:visible}
+  .topbar{
+    display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:60;
+    background:var(--surface);border-bottom:1px solid var(--border);padding:10px 12px;
   }
-  .sidebar-brand,.search-wrap,.sidebar-lists{display:none}
-  .sidebar .nav-group{flex-direction:row;margin-top:0}
-  .sidebar .nav-item{width:auto;white-space:nowrap;flex-shrink:0}
-  .main{height:auto;overflow-y:visible;padding:20px 16px}
+  .topbar .brand-name{font-size:14px}
+  .sidebar{
+    position:fixed;top:0;left:0;bottom:0;width:270px;height:100vh;z-index:80;
+    transform:translateX(-100%);transition:transform .2s ease;
+    background:var(--surface);border-right:1px solid var(--border);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:70;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .main{height:auto;overflow-y:visible;padding:20px 16px 80px}
   .row.has-time{grid-template-columns:1fr;gap:2px}
   .row-time{padding-top:0}
+  .row-title{font-size:16px}
+  .date-group-title{top:44px}
   .src-mgmt-row{grid-template-columns:20px 1fr 40px;gap:6px}
   .src-mgmt-row .m-cat,.src-mgmt-row .m-count,.src-mgmt-row .m-del{display:none}
+  .to-top{right:16px;bottom:16px}
 }
 
 @media (prefers-reduced-motion: reduce){
-  *{transition:none !important}
+  *{transition:none !important;scroll-behavior:auto !important}
 }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <span class="brand-mark">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="2.2" fill="currentColor"/>
-          <circle cx="12" cy="12" r="6.5" stroke="currentColor" stroke-width="1.4" opacity="0.55"/>
-          <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.4" opacity="0.25"/>
-        </svg>
-      </span>
-      <span class="brand-name">AI Consulting Radar</span>
-      <button class="icon-btn" id="search-toggle" title="搜索信息源" aria-label="搜索信息源">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
-          <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </div>
-    <div class="search-wrap" id="search-wrap">
-      <input type="text" id="sidebar-search" class="search-input" placeholder="搜索信息源…">
-    </div>
+  <div class="topbar">
+    <button class="icon-btn" id="drawer-toggle" aria-label="打开菜单">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <span class="brand-name" id="topbar-title">新闻汇总</span>
+  </div>
+  <div class="scrim" id="scrim"></div>
 
-    <div class="nav-group nav-group-first">
-      <button class="nav-item active" data-view="news">新闻汇总</button>
-      <button class="nav-item" data-view="social">社媒汇总</button>
-    </div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-scroll">
+      <div class="sidebar-brand">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="2.2" fill="currentColor"/>
+            <circle cx="12" cy="12" r="6.5" stroke="currentColor" stroke-width="1.4" opacity="0.55"/>
+            <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.4" opacity="0.25"/>
+          </svg>
+        </span>
+        <span class="brand-name">AI Consulting Radar</span>
+      </div>
+      <div class="brand-meta" id="brand-meta"></div>
 
-    <div class="sidebar-lists">
+      <div class="nav-group nav-group-first">
+        <button class="nav-item active" data-view="news">新闻汇总</button>
+        <button class="nav-item" data-view="social">社媒汇总</button>
+      </div>
+
       <div class="nav-group">
         <div class="nav-group-label">重点关注</div>
         <div id="ref-nav"></div>
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-label">全部信息源</div>
-        <div id="all-sources-nav"></div>
+        <button class="nav-disclosure" id="all-src-toggle" aria-expanded="false">
+          <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="all-src-label">全部信息源</span>
+        </button>
+        <div class="nav-collapsible" id="all-src-panel">
+          <div class="search-wrap">
+            <input type="text" id="sidebar-search" class="search-input" placeholder="搜索信息源…">
+          </div>
+          <div id="all-sources-nav"></div>
+        </div>
       </div>
     </div>
 
-    <div class="nav-group">
+    <div class="sidebar-foot">
       <button class="nav-item" data-view="sources">数据源管理</button>
     </div>
   </aside>
 
-  <div class="main">
+  <div class="main" id="main">
     <div class="main-inner">
       <div class="pane active" id="view-news">
+        <div class="view-head">
+          <h1 class="view-title">新闻汇总</h1>
+          <div class="view-sub" id="news-count"></div>
+        </div>
         <div class="filter-bar" id="filter-bar-news">
           按来源筛选：<b id="filter-name-news"></b>
           <span class="clear" data-clear="news">清除</span>
         </div>
-        <div class="view-title">新闻汇总 <span class="n" id="news-count"></span></div>
         <div id="news-clusters"></div>
       </div>
 
       <div class="pane" id="view-social">
+        <div class="view-head">
+          <h1 class="view-title">社媒汇总</h1>
+          <div class="view-sub" id="social-count"></div>
+        </div>
         <div class="filter-bar" id="filter-bar-social">
           按来源筛选：<b id="filter-name-social"></b>
           <span class="clear" data-clear="social">清除</span>
         </div>
-        <div class="view-title">社媒汇总 <span class="n" id="social-count"></span></div>
         <div id="social-clusters"></div>
       </div>
 
       <div class="pane" id="view-sources">
+        <div class="view-head">
+          <h1 class="view-title">数据源管理</h1>
+          <div class="view-sub" id="sources-sub"></div>
+        </div>
         <div class="src-note">星标（重点关注）和删除都只在本页面即时生效，不会写回真实配置文件；确认交互方式后再接入正式流程。</div>
         <div class="src-toolbar">
           <input type="text" id="src-search" placeholder="搜索数据源名称…">
@@ -262,6 +347,10 @@ button{font-family:var(--font-sans)}
   </div>
 </div>
 
+<button class="to-top" id="to-top" title="回到顶部" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
 <script>
 const DATA = __DATA__;
 
@@ -270,12 +359,69 @@ const CAT_NAMES = {
   'plg':'海外PLG','youtube':'YouTube','ai-vertical-apps':'垂直AI应用','ai-coding':'AI编程工具',
   'ai-cn':'中文媒体','uncategorized':'未分类'
 };
+const MAX_CHIPS = 3;
+const STAR_KEY = 'acr.starred.v1';
+
+/* ---------- 转义:标题/摘要来自 RSS 与模型输出,一律不可信 ---------- */
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function safeUrl(u) {
+  const s = String(u == null ? '' : u).trim();
+  return /^https?:\/\//i.test(s) ? esc(s) : '#';
+}
+
+const EXT_ICON = '<svg class="ext" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 let activeView = 'news';
 let filters = { news: null, social: null };
-let starredSources = new Set(DATA.default_starred);
+
+function loadStarred() {
+  try {
+    const raw = localStorage.getItem(STAR_KEY);
+    if (raw) return new Set(JSON.parse(raw));
+  } catch (e) { /* 隐私模式/禁用存储时静默回退 */ }
+  return new Set(DATA.default_starred);
+}
+function saveStarred() {
+  try { localStorage.setItem(STAR_KEY, JSON.stringify([...starredSources])); } catch (e) {}
+}
+let starredSources = loadStarred();
+
+/* ---------- 更新时间:优先用构建时间,否则退回最新一条内容时间 ---------- */
+function latestContentTime() {
+  let max = '';
+  // 源里偶有未来时间戳的脏数据,会把"最新内容"顶到一个不存在的日期,这里直接忽略
+  // 留 1 天容差,避开时区差异带来的误杀
+  const now = new Date(Date.now() + 864e5).toISOString();
+  const scan = arr => {
+    for (const it of arr || []) {
+      const t = String(it.published_at || '');
+      if (t && t <= now && t > max) max = t;
+    }
+  };
+  scan(DATA.social_items);
+  for (const k in DATA.channel_items) scan(DATA.channel_items[k]);
+  return max;
+}
+function fmtStamp(iso) {
+  if (!iso) return '';
+  return iso.slice(5,10).replace('-','-') + ' ' + iso.slice(11,16);
+}
+function renderBrandMeta() {
+  const built = DATA.generated_at;
+  const txt = built
+    ? `更新于 ${fmtStamp(built)} · 近72h`
+    : `最新内容 ${fmtStamp(latestContentTime())} · 近72h`;
+  document.getElementById('brand-meta').textContent = txt;
+}
 
 /* ---------- 视图切换 ---------- */
+
+const VIEW_TITLES = { news:'新闻汇总', social:'社媒汇总', sources:'数据源管理' };
 
 function switchView(view) {
   activeView = view;
@@ -285,10 +431,17 @@ function switchView(view) {
   document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
 
   if (view.startsWith('ref:')) {
-    renderRefPane(view.slice(4));
+    const name = view.slice(4);
+    renderRefPane(name);
+    document.getElementById('topbar-title').textContent = name;
   } else {
     document.getElementById(`view-${view}`).classList.add('active');
+    document.getElementById('topbar-title').textContent = VIEW_TITLES[view] || '';
   }
+  closeDrawer();
+  clearCursor();
+  document.getElementById('main').scrollTop = 0;
+  window.scrollTo(0, 0);
 }
 
 document.addEventListener('click', (e) => {
@@ -301,12 +454,11 @@ document.addEventListener('click', (e) => {
   const starBtn = e.target.closest('[data-star-toggle]');
   if (starBtn) { toggleStar(starBtn.dataset.starToggle); return; }
 
+  // 来源名统一只做「就地筛选」一种行为;进专页只从侧栏走
   const src = e.target.closest('[data-src]');
   if (src) {
-    const name = src.dataset.src;
     const pane = src.closest('#view-news') ? 'news' : (src.closest('#view-social') ? 'social' : null);
-    if (starredSources.has(name)) { switchView('ref:' + name); return; }
-    if (pane) setFilter(pane, name);
+    if (pane) setFilter(pane, src.dataset.src);
     return;
   }
 
@@ -323,21 +475,32 @@ function setFilter(pane, name) {
   if (pane === 'news') renderNews(); else renderSocial();
 }
 
-/* ---------- 新闻汇总(聚类) ---------- */
+/* ---------- 新闻汇总(聚类):默认折叠,标题为主角 ---------- */
+
+function sourceChipsHtml(names) {
+  const head = names.slice(0, MAX_CHIPS);
+  const tail = names.slice(MAX_CHIPS);
+  let html = head.map(n => `<button class="row-source" data-src="${esc(n)}">${esc(n)}</button>`).join('');
+  if (tail.length) {
+    html += tail.map(n => `<button class="row-source chip-extra" data-src="${esc(n)}">${esc(n)}</button>`).join('');
+    html += `<span class="chip-more">+${tail.length}</span>`;
+  }
+  return html;
+}
 
 function clusterRowHtml(c, filterName) {
   const uniqueSrcs = [...new Set(c.members.map(m => m.source_name))];
   const membersHtml = c.members.map(m => `
     <div class="row ${filterName && m.source_name!==filterName ? 'row-dim' : ''}">
-      <div class="row-title"><a href="${m.url}" target="_blank" rel="noopener">${m.title}</a></div>
-      <div class="row-meta"><button class="row-source" data-src="${m.source_name}">${m.source_name}</button></div>
+      <div class="row-title"><a href="${safeUrl(m.url)}" target="_blank" rel="noopener">${esc(m.title)}${EXT_ICON}</a></div>
+      <div class="row-meta"><button class="row-source" data-src="${esc(m.source_name)}">${esc(m.source_name)}</button></div>
     </div>
   `).join('');
   return `
     <div class="row" data-toggle>
-      <div class="row-title">${c.topic} <span class="cluster-count-suffix">· ${c.members.length} 个来源</span></div>
-      <div class="row-secondary">${c.summary}</div>
-      <div class="row-meta">${uniqueSrcs.map(n => `<button class="row-source" data-src="${n}">${n}</button>`).join('')}</div>
+      <div class="row-title">${esc(c.topic)}<span class="row-toggle">${c.members.length} 源${CHEV}</span></div>
+      <div class="row-secondary">${esc(c.summary)}</div>
+      <div class="row-meta">${sourceChipsHtml(uniqueSrcs)}</div>
       <div class="row-members">${membersHtml}</div>
     </div>`;
 }
@@ -351,7 +514,8 @@ function renderNews() {
     visible++;
     return clusterRowHtml(c, f);
   }).join('');
-  document.getElementById('news-count').textContent = `(${visible}${f ? ' / ' + DATA.news.clusters.length : ''})`;
+  document.getElementById('news-count').textContent =
+    f ? `${visible} / ${DATA.news.clusters.length} 个话题 · 已按来源筛选` : `${visible} 个话题`;
   document.getElementById('news-clusters').innerHTML = html || `<div class="empty-hint">该来源近期没有进入话题聚合的内容</div>`;
 }
 
@@ -359,33 +523,42 @@ function renderNews() {
 
 function groupByDate(items) {
   const groups = new Map();
-  const order = [];
   for (const it of items) {
-    const d = it.published_at.slice(0, 10);
-    if (!groups.has(d)) { groups.set(d, []); order.push(d); }
+    const d = String(it.published_at || '').slice(0, 10);
+    if (!groups.has(d)) groups.set(d, []);
     groups.get(d).push(it);
   }
-  order.sort((a, b) => b.localeCompare(a));
-  return order.map(d => ({ date: d, items: groups.get(d) }));
+  return [...groups.keys()].sort((a, b) => b.localeCompare(a)).map(d => ({
+    date: d,
+    // 组内按时间倒序:上游给的顺序不保证有序
+    items: groups.get(d).slice().sort((a, b) => String(b.published_at).localeCompare(String(a.published_at))),
+  }));
 }
 
 function dateGroupedHtml(items, rowFn) {
   if (!items.length) return `<div class="empty-hint">近72小时没有内容</div>`;
-  return groupByDate(items).map(g => `
+  return groupByDate(items).map(g => {
+    let prevSrc = null;
+    const rows = g.items.map(it => {
+      const repeat = it.source_name === prevSrc;
+      prevSrc = it.source_name;
+      return rowFn(it, repeat);
+    }).join('');
+    return `
     <div class="date-group">
-      <div class="date-group-title">${g.date} <span class="count">· ${g.items.length} 条</span></div>
-      <div>${g.items.map(rowFn).join('')}</div>
-    </div>
-  `).join('');
+      <div class="date-group-title">${esc(g.date)} <span class="count">· ${g.items.length} 条</span></div>
+      <div>${rows}</div>
+    </div>`;
+  }).join('');
 }
 
-function singleRowHtml(it, showSrc) {
+function singleRowHtml(it, showSrc, repeat) {
   return `
     <div class="row has-time">
-      <span class="row-time">${it.published_at.slice(11,16)}</span>
+      <span class="row-time">${esc(String(it.published_at).slice(11,16))}</span>
       <div>
-        <div class="row-title"><a href="${it.url}" target="_blank" rel="noopener">${it.title}</a></div>
-        ${showSrc ? `<div class="row-meta"><button class="row-source" data-src="${it.source_name}">${it.source_name}</button></div>` : ''}
+        <div class="row-title"><a href="${safeUrl(it.url)}" target="_blank" rel="noopener">${esc(it.title)}${EXT_ICON}</a></div>
+        ${showSrc ? `<div class="row-meta"><button class="row-source ${repeat?'repeat':''}" data-src="${esc(it.source_name)}">${esc(it.source_name)}</button></div>` : ''}
       </div>
     </div>`;
 }
@@ -395,8 +568,10 @@ function singleRowHtml(it, showSrc) {
 function renderSocial() {
   const f = filters.social;
   const items = f ? DATA.social_items.filter(s => s.source_name === f) : DATA.social_items;
-  document.getElementById('social-count').textContent = `(${items.length})`;
-  document.getElementById('social-clusters').innerHTML = dateGroupedHtml(items, it => singleRowHtml(it, true));
+  document.getElementById('social-count').textContent =
+    f ? `${items.length} / ${DATA.social_items.length} 条 · 已按来源筛选` : `${items.length} 条`;
+  document.getElementById('social-clusters').innerHTML =
+    dateGroupedHtml(items, (it, repeat) => singleRowHtml(it, true, repeat));
 }
 
 /* ---------- 重点关注 + 全部信息源(星标驱动) ---------- */
@@ -405,10 +580,10 @@ function renderRefNav() {
   const names = [...starredSources].sort((a, b) => a.localeCompare(b, 'zh'));
   document.getElementById('ref-nav').innerHTML = names.map(name => `
     <div class="src-row">
-      <button class="nav-item ${activeView==='ref:'+name?'active':''}" data-view="ref:${name}">${name}</button>
-      <button class="star-btn starred" data-star-toggle="${name}" title="取消重点关注">★</button>
+      <button class="nav-item ${activeView==='ref:'+name?'active':''}" data-view="ref:${esc(name)}">${esc(name)}</button>
+      <button class="star-btn starred" data-star-toggle="${esc(name)}" title="取消重点关注">★</button>
     </div>
-  `).join('') || `<div class="nav-empty-hint">在"全部信息源"中点击☆添加</div>`;
+  `).join('') || `<div class="nav-empty-hint">在“全部信息源”中点击☆添加</div>`;
 }
 
 function renderAllSourcesNav() {
@@ -416,13 +591,14 @@ function renderAllSourcesNav() {
   const names = DATA.sources.map(s => s.name)
     .filter(n => !q || n.toLowerCase().includes(q))
     .sort((a, b) => a.localeCompare(b, 'zh'));
+  document.getElementById('all-src-label').textContent = `全部信息源 (${DATA.sources.length})`;
   document.getElementById('all-sources-nav').innerHTML = names.map(name => {
     const starred = starredSources.has(name);
     return `<div class="src-row">
-      <button class="nav-item ${activeView==='ref:'+name?'active':''}" data-view="ref:${name}">${name}</button>
-      <button class="star-btn ${starred?'starred':''}" data-star-toggle="${name}" title="${starred?'取消重点关注':'加入重点关注'}">${starred?'★':'☆'}</button>
+      <button class="nav-item ${activeView==='ref:'+name?'active':''}" data-view="ref:${esc(name)}">${esc(name)}</button>
+      <button class="star-btn ${starred?'starred':''}" data-star-toggle="${esc(name)}" title="${starred?'取消重点关注':'加入重点关注'}">${starred?'★':'☆'}</button>
     </div>`;
-  }).join('');
+  }).join('') || `<div class="nav-empty-hint">没有匹配的信息源</div>`;
 }
 
 let sidebarSearch = '';
@@ -431,23 +607,18 @@ document.getElementById('sidebar-search').addEventListener('input', e => {
   renderAllSourcesNav();
 });
 
-document.getElementById('search-toggle').addEventListener('click', () => {
-  const wrap = document.getElementById('search-wrap');
-  const input = document.getElementById('sidebar-search');
-  const opening = !wrap.classList.contains('open');
-  wrap.classList.toggle('open', opening);
-  if (opening) {
-    input.focus();
-  } else {
-    input.value = '';
-    sidebarSearch = '';
-    renderAllSourcesNav();
-  }
+const allSrcToggle = document.getElementById('all-src-toggle');
+allSrcToggle.addEventListener('click', () => {
+  const open = allSrcToggle.getAttribute('aria-expanded') !== 'true';
+  allSrcToggle.setAttribute('aria-expanded', String(open));
+  document.getElementById('all-src-panel').classList.toggle('open', open);
+  if (open) document.getElementById('sidebar-search').focus();
 });
 
 function toggleStar(name) {
   if (starredSources.has(name)) starredSources.delete(name);
   else starredSources.add(name);
+  saveStarred();
   renderRefNav();
   renderAllSourcesNav();
   renderSourceList();
@@ -467,8 +638,11 @@ function renderRefPane(name) {
 
   const items = DATA.channel_items[name] || [];
   pane.innerHTML = `
-    <div class="view-title">${name} <span class="n">(${items.length})</span></div>
-    ${dateGroupedHtml(items, it => singleRowHtml(it, false))}`;
+    <div class="view-head">
+      <h1 class="view-title">${esc(name)}</h1>
+      <div class="view-sub">${items.length} 条 · 近72h</div>
+    </div>
+    ${dateGroupedHtml(items, it => singleRowHtml(it, false, false))}`;
 }
 
 /* ---------- 数据源管理 ---------- */
@@ -482,7 +656,7 @@ function renderCatChips() {
   el.innerHTML = `<button class="${activeCat==='all'?'active':''}" data-cat="all">全部 (${DATA.sources.length})</button>` +
     cats.map(c => {
       const count = DATA.sources.filter(s => s.category === c).length;
-      return `<button class="${activeCat===c?'active':''}" data-cat="${c}">${CAT_NAMES[c]||c} (${count})</button>`;
+      return `<button class="${activeCat===c?'active':''}" data-cat="${esc(c)}">${esc(CAT_NAMES[c]||c)} (${count})</button>`;
     }).join('');
 }
 
@@ -494,17 +668,19 @@ function renderSourceList() {
   const activeN = list.filter(s => !removedSources.has(s.name)).length;
   document.getElementById('src-summary').textContent =
     `显示 ${list.length} 个源（当前视图内已删除 ${list.length - activeN} 个）`;
+  document.getElementById('sources-sub').textContent =
+    `${DATA.sources.length} 个源 · 已重点关注 ${starredSources.size} 个`;
 
   document.getElementById('src-list').innerHTML = list.map(s => {
     const removed = removedSources.has(s.name);
     const starred = starredSources.has(s.name);
     return `
-    <div class="src-mgmt-row ${removed?'removed':''}" data-name="${s.name}">
+    <div class="src-mgmt-row ${removed?'removed':''}" data-name="${esc(s.name)}">
       <button class="m-star ${starred?'starred':''}" title="${starred?'取消重点关注':'加入重点关注'}">${starred?'★':'☆'}</button>
-      <span class="m-name">${s.name}</span>
-      <span class="m-type">${s.type}</span>
-      <span class="m-cat">${CAT_NAMES[s.category]||s.category}</span>
-      <span class="m-count">近72h · ${s.recent_count}条</span>
+      <span class="m-name">${esc(s.name)}</span>
+      <span class="m-type">${esc(s.type)}</span>
+      <span class="m-cat">${esc(CAT_NAMES[s.category]||s.category)}</span>
+      <span class="m-count">近72h · ${esc(s.recent_count)}条</span>
       <button class="m-del" title="删除">✕</button>
       <button class="m-undo">撤销</button>
     </div>`;
@@ -530,10 +706,70 @@ document.getElementById('src-list').addEventListener('click', e => {
   const name = row.dataset.name;
   if (e.target.classList.contains('m-del')) { removedSources.add(name); renderSourceList(); }
   else if (e.target.classList.contains('m-undo')) { removedSources.delete(name); renderSourceList(); }
-  else if (e.target.classList.contains('m-star')) { toggleStar(name); renderRefNav(); renderAllSourcesNav(); }
+  else if (e.target.classList.contains('m-star')) { toggleStar(name); }
+});
+
+/* ---------- 移动端抽屉 ---------- */
+const sidebarEl = document.getElementById('sidebar');
+const scrimEl = document.getElementById('scrim');
+function closeDrawer() { sidebarEl.classList.remove('open'); scrimEl.classList.remove('show'); }
+document.getElementById('drawer-toggle').addEventListener('click', () => {
+  const open = !sidebarEl.classList.contains('open');
+  sidebarEl.classList.toggle('open', open);
+  scrimEl.classList.toggle('show', open);
+});
+scrimEl.addEventListener('click', closeDrawer);
+
+/* ---------- 回到顶部 ---------- */
+const mainEl = document.getElementById('main');
+const toTop = document.getElementById('to-top');
+function onScroll() {
+  const y = mainEl.scrollTop || window.scrollY;
+  toTop.classList.toggle('show', y > 600);
+}
+mainEl.addEventListener('scroll', onScroll);
+window.addEventListener('scroll', onScroll);
+toTop.addEventListener('click', () => { mainEl.scrollTop = 0; window.scrollTo({top:0, behavior:'smooth'}); });
+
+/* ---------- 键盘导航 j/k/Enter/o ---------- */
+let cursorEl = null;
+function clearCursor() {
+  if (cursorEl) cursorEl.classList.remove('cursor');
+  cursorEl = null;
+}
+function visibleRows() {
+  const pane = document.querySelector('.pane.active');
+  if (!pane) return [];
+  // 只取顶层行,聚类展开后的成员行不进入导航序列
+  return [...pane.querySelectorAll('.row')].filter(r => !r.closest('.row-members'));
+}
+function moveCursor(step) {
+  const rows = visibleRows();
+  if (!rows.length) return;
+  let i = cursorEl ? rows.indexOf(cursorEl) : -1;
+  i = Math.max(0, Math.min(rows.length - 1, i + step));
+  clearCursor();
+  cursorEl = rows[i];
+  cursorEl.classList.add('cursor');
+  cursorEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'j') { e.preventDefault(); moveCursor(1); }
+  else if (e.key === 'k') { e.preventDefault(); moveCursor(-1); }
+  else if (e.key === 'o' && cursorEl) { e.preventDefault(); cursorEl.classList.toggle('expanded'); }
+  else if (e.key === 'Enter' && cursorEl) {
+    const a = cursorEl.querySelector('.row-title a');
+    if (a) { e.preventDefault(); window.open(a.href, '_blank', 'noopener'); }
+    else cursorEl.classList.toggle('expanded');
+  }
+  else if (e.key === 'Escape') closeDrawer();
 });
 
 /* ---------- init ---------- */
+renderBrandMeta();
 renderRefNav();
 renderAllSourcesNav();
 renderNews();

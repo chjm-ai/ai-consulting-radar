@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from pathlib import Path
 
 root = Path(__file__).resolve().parent.parent
@@ -18,6 +19,8 @@ data = {
     "channel_items": channel_items,
     "sources": sources,
     "default_starred": DEFAULT_STARRED,
+    # 页面上展示「更新于」用;缺失时前端退回「最新内容时间」
+    "generated_at": datetime.now().isoformat(timespec="seconds"),
 }
 
 template = (root / "demo/cluster-demo.template.html").read_text()
